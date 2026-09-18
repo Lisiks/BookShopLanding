@@ -56,7 +56,8 @@ class Books(Base):
 
     author: Mapped["Authors"] = relationship()
 
-    jahnres: Mapped[list["BooksJahnres"]] = relationship(cascade="all, delete-orphan")
+    jahnres: Mapped[list["Jahnres"]] = relationship(secondary=BooksJahnres)
+    books_jahnres: Mapped[list["BooksJahnres"]] = relationship(cascade="all, delete-orphan")
     comments: Mapped[list["Comments"]] = relationship(cascade="all, delete-orphan")
 
     __table_args__ = (
