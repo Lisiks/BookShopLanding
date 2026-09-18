@@ -12,15 +12,7 @@ class DBConfig(BaseSettings):
 
     @computed_field
     def url(self) -> str:
-        db_url = URL.create(
-            drivername="postgresql+asyncpg",
-            database=self.name,
-            port=self.port,
-            host=self.host,
-            username=self.user,
-            password=self.password
-        )
-        return str(db_url)
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
     model_config = SettingsConfigDict(
         case_sensitive=False,
@@ -29,8 +21,22 @@ class DBConfig(BaseSettings):
     )
 
 
+class AppConfig(BaseSettings):
+    port: int
+    reload: bool
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="APP_"
+    )
+
+
 class Config(BaseSettings):
     db: DBConfig = DBConfig()
+    app: AppConfig = AppConfig()
 
 
 config = Config()
+
+

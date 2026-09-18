@@ -8,12 +8,17 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
   
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U {DB_USER} -d ${DB_NAME}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 10s
+      start_interval: 1s 
+
   
   backend_application:
     build: /home/lisiks/Рабочий стол/College/4 Курс/Application
@@ -22,14 +27,15 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      APP_PORT: ${APP_PORT}
+      APP_RELOAD: ${APP_RELOAD}
     ports:
-      - "${APP_PORT}:8000"
+      - "${APP_PORT}:${APP_PORT}"
     depends_on:
       postgres:
         condition: service_healthy
   
-
 volumes:
   pgdata:
