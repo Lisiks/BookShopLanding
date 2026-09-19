@@ -5,8 +5,8 @@ class RedisManager:
     __client: redis.asyncio.Redis
 
     @classmethod
-    def init_client(cls) -> None:
-        cls.__client = redis.asyncio.Redis(
+    async def init_client(cls) -> None:
+        cls.__client = await redis.asyncio.Redis(
             host=config.redis.host,
             port=config.redis.port,
             db=config.redis.db
