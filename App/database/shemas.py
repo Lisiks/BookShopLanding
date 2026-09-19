@@ -58,7 +58,6 @@ class Books(Base):
 
     jahnres: Mapped[list["Jahnres"]] = relationship(secondary=BooksJahnres)
     books_jahnres: Mapped[list["BooksJahnres"]] = relationship(cascade="all, delete-orphan")
-    comments: Mapped[list["Comments"]] = relationship(cascade="all, delete-orphan")
 
     __table_args__ = (
         CheckConstraint("page_count > 0", name="page_count_positive_ck"),
@@ -76,7 +75,6 @@ class Users(Base):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False, server_default="FALSE", index=True)
     is_blocked: Mapped[bool] = mapped_column(Boolean, default=False, server_default="FALSE")
 
-    orders: Mapped[list["Orders"]] = relationship(back_populates="user")
 
 
 class OrderStatuses(enum.Enum):
@@ -105,7 +103,7 @@ class Orders(Base):
     shop_id: Mapped[Optional[int]] = mapped_column(ForeignKey("shops.id", ondelete="SET NULL", onupdate="CASCADE", name="shops_id_fk"))
 
     shop: Mapped["Shops"] = relationship()
-    user: Mapped["Users"] = relationship(back_populates="orders")
+    user: Mapped["Users"] = relationship()
     items: Mapped[list["OrdersItems"]] = relationship(cascade="all, delete-orphan")
 
 
