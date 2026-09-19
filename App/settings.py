@@ -45,6 +45,18 @@ class RedisConfig(BaseSettings):
     )
 
 
+class SessionConfig(BaseSettings):
+    ttl: int
+    hash_key: str
+    cookie_key: str
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="SESSION_"
+    )
+
+
 class PaginationConfig(BaseSettings):
     books_page_size: Annotated[int, Field(gt=0)]
     users_page_size: Annotated[int, Field(gt=0)]
@@ -63,9 +75,7 @@ class Config(BaseSettings):
     app: AppConfig = AppConfig()
     pagination: PaginationConfig = PaginationConfig()
     redis: RedisConfig = RedisConfig()
-
-
-
+    session: SessionConfig = SessionConfig()
 
 
 config = Config()
