@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import computed_field
+from pydantic import computed_field, Field
+from typing import Annotated
 from sqlalchemy import URL
 
 
@@ -32,9 +33,26 @@ class AppConfig(BaseSettings):
     )
 
 
+class PaginationConfig(BaseSettings):
+    books_page_size: Annotated[int, Field(gt=0)]
+    users_page_size: Annotated[int, Field(gt=0)]
+    orders_page_size: Annotated[int, Field(gt=0)]
+  
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="PAGINATION_"
+    )
+
+
 class Config(BaseSettings):
     db: DBConfig = DBConfig()
     app: AppConfig = AppConfig()
+    pagination: PaginationConfig = PaginationConfig()
+
+
+
 
 
 config = Config()
