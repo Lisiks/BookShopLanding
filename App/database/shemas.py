@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Text, ForeignKey, Numeric, CHAR, CheckConstraint, Table, Column, PrimaryKeyConstraint, Boolean, DateTime, func, Enum
+from sqlalchemy import String, Text, ForeignKey, Numeric, CHAR, CheckConstraint, Table, Column, PrimaryKeyConstraint, Boolean, DateTime, func, Enum, Index
 from typing import Optional
 from datetime import datetime
 import enum
@@ -21,9 +21,13 @@ class Authors(Base):
     __tablename__ = "authors"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    f: Mapped[str] = mapped_column(String(100), index=True)
+    f: Mapped[str] = mapped_column(String(100))
     i: Mapped[str] = mapped_column(String(100))
     o: Mapped[str] = mapped_column(String(100))
+
+    __table_args__ = (
+        Index("fio_idx", "f", "i", "o"),
+    )
 
 
 

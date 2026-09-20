@@ -23,3 +23,7 @@ class UsersSearchModel(PaginationBase):
 
 class JahnresSearchModel(BaseModel):
     name: Annotated[Optional[str], Field(max_length=100, default=None)]
+
+
+class AuthorsSearchModel(BaseModel):
+    name_part: Annotated[Optional[str], Field(max_length=100, default=None, alias="namePart")]
