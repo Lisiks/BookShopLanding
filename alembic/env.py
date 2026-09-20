@@ -24,8 +24,8 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 
 
-from App.database import Base
-from App.settings import config as app_config
+from app.database import Base
+from app.settings import config as app_config
 
 target_metadata = Base.metadata
 

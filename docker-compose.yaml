@@ -63,6 +63,8 @@ services:
       SESSION_TTL: ${SESSION_TTL}
       SESSION_HASH_KEY: ${SESSION_HASH_KEY}
       SESSION_COOKIE_KEY: ${SESSION_COOKIE_KEY}
+    volumes:
+       - app_data:/app/app/static
     ports:
       - "${APP_PORT}:${APP_PORT}"
     depends_on:
@@ -75,5 +77,6 @@ services:
       
   
 volumes:
+  app_data:
   pgdata:
   redis_data:

@@ -31,7 +31,7 @@ def create_app() -> FastAPI:
         version=config.app.version
     )
 
-    app.mount("/static", StaticFiles(directory="App/static"), name="static")
+    app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
     app.include_router(router)
     set_exception_handlers(app)
@@ -91,7 +91,16 @@ def set_exception_handlers(app: FastAPI) -> None:
         if "duplicate key value violates unique constraint \"address_uq\"" in exception_description:
             return JSONResponse(content={"msg": "Shop with this address already exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
-        return JSONResponse(content={"msg": "ya"}, status_code=418)
+        if "insert or update on table \"books\" violates foreign key constraint \"authors_id_fk\"" in exception_description:
+            return JSONResponse(content={"msg": "Author with this id doesnt exists in database"}, status_code=status.HTTP_409_CONFLICT)
+
+        if "insert or update on table \"books\" violates foreign key constraint \"jahnres_id_fk\"" in exception_description:
+            return JSONResponse(content={"msg": "Jahnre with this id doesnt exists in database"}, status_code=status.HTTP_409_CONFLICT)
+
+        if "duplicate key value violates unique constraint \"books_isbn_key\"" in exception_description:
+            return JSONResponse(content={"msg": "Book with thid ISBN already exists in database"}, status_code=status.HTTP_409_CONFLICT)
+
+        return JSONResponse(content={"msg": "database incached error"}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @app.exception_handler(redis.exceptions.ConnectionError)
     def redis_connection_exception_handler(request: Request, exc: redis.exceptions.ConnectionError) -> JSONResponse:

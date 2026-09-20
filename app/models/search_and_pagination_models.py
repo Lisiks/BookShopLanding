@@ -6,7 +6,23 @@ from ..settings import config
 
 
 class PaginationBase(BaseModel):
-    page: Annotated[int, Field(ge=0)]
+    page: Annotated[int, Field(ge=0, default=0)]
+
+
+class BookSearchModel(PaginationBase):
+    title: Annotated[Optional[str], Field(max_length=200, default=None)]
+    min_price: Annotated[Optional[float], Field(gt=0.0, alias="minPrice", default=None)]
+    max_price: Annotated[Optional[float], Field(gt=0.0, alias="maxPrice", default=None)]
+    jahnre_id: Annotated[Optional[int], Field(gt=0, alias="jahnreId", default=None)]
+    author_id: Annotated[Optional[int], Field(gt=0, alias="authorId", default=None)]
+
+    @computed_field
+    def limit(self) -> int:
+        return config.pagination.books_page_size
+
+    @computed_field
+    def offset(self) -> int:
+        return self.page * config.pagination.books_page_size
 
 
 class UsersSearchModel(PaginationBase):

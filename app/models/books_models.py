@@ -7,15 +7,16 @@ from .authors_models import AuthorGetModel
 from .jahnres_models import JahnreGetModel
 
 
-__IMAGE_FILE_CORRECT_TYPES = {"image/png", "image/jpeg", "image/jpg", "image/bmp", "image/webp"}
-__DEMO_FILE_CORRECT_TYPES = {"application/pdf"}
+IMAGE_FILE_CORRECT_TYPES = {"image/png", "image/jpeg", "image/jpg", "image/bmp", "image/webp"}
+DEMO_FILE_CORRECT_TYPES = {"application/pdf"}
 
 
 class BookBaseModel(BaseModel):
 
     title: Annotated[str, Field(max_length=200)]
     description: Annotated[Optional[str], Field(default=None)]
-    author_id: Annotated[int, Field(alias="authorId")]
+    author_id: Annotated[Optional[int], Field(alias="authorId", default=None)]
+    jahnre_id: Annotated[Optional[int], Field(gt=0, alias="jahnreId", default=None)]
     page_count: Annotated[int, Field(gt=0, alias="pageCount")]
     write_year: Annotated[int, Field(alias="writeYear")]
     price: Annotated[float, Field(gt=0.0, lt=100000000)]
@@ -31,48 +32,40 @@ class BookBaseModel(BaseModel):
 
 class BookPostModel(BookBaseModel):
 
-    image_file: Annotated[UploadFile, Field(alias="imageFile")]
-    demo_file: Annotated[UploadFile, Field(alias="demoFile")]
-    jahnres: list[int]
+    image_file: Annotated[UploadFile, Field(alias="imageFile", exclude=True)]
+    demo_file: Annotated[UploadFile, Field(alias="demoFile", exclude=True)]
+    
 
     @field_validator("write_year", mode="after")
     @classmethod
     def validate_year(cls, value: int) -> int:
-        if value > datetime.now(timezone.utc):
+        if value > datetime.now(timezone.utc).year:
             raise ValueError("Year cannot be greather than today year.")
         return value
 
 
     @field_validator("image_file", mode="after")
     @classmethod
-    def validate_year(cls, value: UploadFile) -> UploadFile:
-        if value.content_type not in __IMAGE_FILE_CORRECT_TYPES:
-            raise ValueError("Image content type is incorrect. Correct types: {__IMAGE_FILE_CORRECT_TYPES}")
+    def validate_image_file(cls, value: UploadFile) -> UploadFile:
+        if value.content_type not in IMAGE_FILE_CORRECT_TYPES:
+            raise ValueError(f"Image content type is incorrect. Correct types: {IMAGE_FILE_CORRECT_TYPES}")
         return value
 
     @field_validator("demo_file", mode="after")
     @classmethod
-    def validate_year(cls, value: Optional[UploadFile]) -> Optional[UploadFile]:
-        if value is not None and value.content_type not in __DEMO_FILE_CORRECT_TYPES:
-            raise ValueError(f"Demo file content type is incorrect. Correct types: {__DEMO_FILE_CORRECT_TYPES} ")
+    def validate_demo_file(cls, value: Optional[UploadFile]) -> Optional[UploadFile]:
+        if value.content_type not in DEMO_FILE_CORRECT_TYPES:
+            raise ValueError(f"Demo file content type is incorrect. Correct types: {DEMO_FILE_CORRECT_TYPES}")
         return value
 
 
-class BookGetModel(BookBaseModel):
+class BookGetModelWithoutORM(BookBaseModel):
     id: int
     image_file_path: Annotated[str, Field(alias="imageFilePath")]
-    demo_file_path: Annotated[str, Field(alias="demoFilePath")]
-    author: AuthorGetModel
-    jahnres: list[JahnreGetModel]
+    demo_file_path: Annotated[str, Field(alias="demoFilePath", default=None)]
 
 
+class BookGetModel(BookGetModelWithoutORM):
+    author: Optional[AuthorGetModel]
+    jahnre: Optional[JahnreGetModel]
 
-
-class BookSinpleModel(BaseModel):
-    id: int
-    title: Annotated[str, Field(max_length=200)]
-
-    model_config = ConfigDict(
-        from_attributes=True,
-        extra="ignore"
-    )

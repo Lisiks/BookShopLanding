@@ -7,8 +7,8 @@ from fastapi import UploadFile
 
 
 class FileManager:
-    __image_file_dir_path = "App/static/images/"
-    __demo_file_dir_path = "App/static/demo/"
+    __image_file_dir_path = "app/static/images/"
+    __demo_file_dir_path = "app/static/demo/"
 
     __image_file_web_path = "static/images/"
     __demo_file_web_path = "static/demo/"

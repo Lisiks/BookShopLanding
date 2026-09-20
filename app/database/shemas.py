@@ -41,7 +41,7 @@ class Books(Base):
     price: Mapped[float] = mapped_column(Numeric(10, 2), index=True)
     isbn: Mapped[str] = mapped_column(CHAR(17), unique=True)
     image_file_path: Mapped[str] = mapped_column(Text)
-    demo_file_path: Mapped[Optional[str]] = mapped_column(Text)
+    demo_file_path: Mapped[str] = mapped_column(Text)
 
     author: Mapped["Authors"] = relationship()
     jahnre: Mapped["Jahnres"] = relationship()
