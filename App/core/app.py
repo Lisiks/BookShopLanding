@@ -80,8 +80,13 @@ def set_exception_handlers(app: FastAPI) -> None:
             return JSONResponse(content={"msg": "User with this username already exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
         if "duplicate key value violates unique constraint \"jahnres_name_key\"" in exception_description:
-            return JSONResponse(content={"msg": "Jahnre with this username already exists in database"}, status_code=status.HTTP_409_CONFLICT)
+            return JSONResponse(content={"msg": "Jahnre with this name already exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
+        if "duplicate key value violates unique constraint \"shops_phone_key\"" in exception_description:
+            return JSONResponse(content={"msg": "Shop with this phone already exists in database"}, status_code=status.HTTP_409_CONFLICT)
+
+        if "duplicate key value violates unique constraint \"address_uq\"" in exception_description:
+            return JSONResponse(content={"msg": "Shop with this address already exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
         return JSONResponse(content={"msg": "ya"}, status_code=418)
 

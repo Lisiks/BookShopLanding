@@ -27,3 +27,7 @@ class JahnresSearchModel(BaseModel):
 
 class AuthorsSearchModel(BaseModel):
     name_part: Annotated[Optional[str], Field(max_length=100, default=None, alias="namePart")]
+
+
+class ShopSearchModel(BaseModel):
+    address: Annotated[Optional[str], Field(max_length=300, default=None)]

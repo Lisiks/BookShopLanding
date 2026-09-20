@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, literal
 from fastapi import Depends
 from typing import Annotated
 
@@ -47,7 +47,11 @@ class AuthorsRepository:
         stmt = select(Authors)
 
         if search_params.name_part is not None:
-            stmt = stmt.where(or_(Authors.f.ilike(f"{search_params.name_part}%"), Authors.i.ilike(f"{search_params.name_part}%"), Authors.o.ilike(f"{search_params.name_part}%")))
+            stmt = stmt.where(or_(
+                literal(search_params.name_part).icontains(Authors.f),
+                literal(search_params.name_part).icontains(Authors.i),
+                literal(search_params.name_part).icontains(Authors.o),
+            ))
 
         authors = await self.__session.scalars(stmt)
         return {author.id: AuthorGetModel.model_validate(author) for author in authors.all()}

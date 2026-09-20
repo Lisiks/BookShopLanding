@@ -6,7 +6,7 @@ from ..services.auth_service import auth_admin
 from ..models.authors_models import AuthorGetModel, AuthorPostModel
 from ..models.search_and_pagination_models import AuthorsSearchModel
 
-router = APIRouter(prefix="/authors", tags=["✍️ Authors"])
+router = APIRouter(prefix="/authors", tags=["✍️ authors"])
 
 @router.post("/create", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def create_author(
