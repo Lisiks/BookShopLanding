@@ -6,13 +6,17 @@ class LoginException(Exception):
     ...
 
 
-class BlockedUserException(Exception):
-    ...
-
-
 class ForbidenException(Exception):
     ...
 
 
-class AuthinticateException(Exception):
+class AuthException(Exception):
+    ...
+
+
+class InvalidSessionException(Exception):
+    ...
+
+
+class QueryException(Exception):
     ...

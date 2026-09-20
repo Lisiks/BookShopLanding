@@ -25,12 +25,13 @@ if config.config_file_name is not None:
 
 
 from App.database import Base
+from App.settings import config as app_config
 
 target_metadata = Base.metadata
 
-url_sqla = f"postgresql+asyncpg://lisiks:94384834839898vcjhgjhfjth5b6h5bhvkk23h23g4v3h4bnvnjfjkjykjn67jnj@localhost:5432/book_landing_db"
+#url_sqla = f"postgresql+asyncpg://lisiks:94384834839898vcjhgjhfjth5b6h5bhvkk23h23g4v3h4bnvnjfjkjykjn67jnj@localhost:5432/book_landing_db"
 
-config.set_main_option("sqlalchemy.url", url_sqla)
+config.set_main_option("sqlalchemy.url", app_config.db.url)
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")

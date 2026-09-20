@@ -21,6 +21,8 @@ session_fabric = async_sessionmaker(
 )
 
 
-async def get_session() -> AsyncGenerator[AsyncSession, None, None]:
+async def get_session() -> AsyncGenerator:
     async with session_fabric() as session:
         yield session
+
+

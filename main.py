@@ -1,4 +1,5 @@
-from App.core import create_app, config
+from App.core import create_app
+from App.settings import config
 import uvicorn
 
 app = create_app()

@@ -27,19 +27,6 @@ class Authors(Base):
 
 
 
-
-class BooksJahnres(Base):
-    __tablename__ = "books_jahnres"
-
-    book_id: Mapped[int] = mapped_column(ForeignKey("books.id", name="book_id_fk", ondelete="CASCADE", onupdate="CASCADE"))
-    jahnre_id: Mapped[int] = mapped_column(ForeignKey("jahnres.id", name="jahnre_id_fk", ondelete="CASCADE", onupdate="CASCADE"))
-
-    __table_args__ = (
-        PrimaryKeyConstraint("book_id", "jahnre_id", name="books_jahnres_pk"),
-    )
-
-
-
 class Books(Base):
     __tablename__ = "books"
 
@@ -47,6 +34,7 @@ class Books(Base):
     title: Mapped[str] = mapped_column(String(200), index=True)
     description: Mapped[Optional[str]] = mapped_column(Text)
     author_id: Mapped[Optional[int]] = mapped_column(ForeignKey("authors.id", ondelete="SET NULL", onupdate="CASCADE", name="authors_id_fk"))
+    jahnre_id: Mapped[Optional[int]] = mapped_column(ForeignKey("jahnres.id", ondelete="SET NULL", onupdate="CASCADE", name="jahnres_id_fk"))
     page_count: Mapped[int]
     write_year: Mapped[int]
     price: Mapped[float] = mapped_column(Numeric(10, 2), index=True)
@@ -55,9 +43,7 @@ class Books(Base):
     demo_file_path: Mapped[Optional[str]] = mapped_column(Text)
 
     author: Mapped["Authors"] = relationship()
-
-    jahnres: Mapped[list["Jahnres"]] = relationship(secondary=BooksJahnres)
-    books_jahnres: Mapped[list["BooksJahnres"]] = relationship(cascade="all, delete-orphan")
+    jahnre: Mapped["Jahnres"] = relationship()
 
     __table_args__ = (
         CheckConstraint("page_count > 0", name="page_count_positive_ck"),

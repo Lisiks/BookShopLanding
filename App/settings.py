@@ -25,6 +25,8 @@ class DBConfig(BaseSettings):
 class AppConfig(BaseSettings):
     port: int
     reload: bool
+    su_login: str
+    su_password: str
 
     model_config = SettingsConfigDict(
         case_sensitive=False,

@@ -1,0 +1,100 @@
+from typing import Annotated, Optional
+from fastapi import Depends, Cookie
+
+
+from .session_manager import SessionManager, get_session_manager
+from ..database.repositories.users_repository import get_repository, UsersRepository
+from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
+from ..models.search_and_pagination_models import UsersSearchAndPaginationModel
+from ..exceptions import LoginException, ForbidenException, AuthException, InvalidSessionException
+
+from ..utils import PasswordManager
+from ..settings import config
+
+
+
+class AuthService:
+    def __init__(self, repository: UsersRepository, session_manager: SessionManager):
+        self.__repository = repository
+        self.__session_manager = session_manager
+
+
+    async def user_login(self, user_data: UserLoginModel) -> str:
+        user = await self.__repository.get_by_name(user_data.username)
+
+        if user is None or not PasswordManager.verify_password(user_data.plain_password, user.password_hash):
+            raise LoginException("Incorrect login or password!")
+
+        if user.is_blocked:
+            raise ForbidenException("This user was blocked!")
+
+        return await self.__session_manager.create_session(user)
+
+
+    async def admin_login(self, user_data: UserLoginModel) -> str:
+        user = await self.__repository.get_by_name(user_data.username)
+        
+        if user is None or not PasswordManager.verify_password(user_data.plain_password, user.password_hash):
+            raise LoginException("Incorrect login or password!")
+
+        if user.is_blocked:
+            raise ForbidenException("This user was blocked!")
+
+        if user.is_admin == False:
+            raise ForbidenException("This user isnt an administrator!")
+
+        return await self.__session_manager.create_session(user)
+
+
+    async def logout(self, session: str) -> None:
+        await self.__session_manager.delete_session(session)
+
+
+
+async def get_data_from_session(
+    session_manager: Annotated[SessionManager, Depends(get_session_manager)],
+    session: Annotated[Optional[str], Cookie(alias=config.session.cookie_key)] = None
+) -> UserGetModel | None:
+    
+    if session is None:
+        return None
+
+    session_data = await session_manager.read_session(session)
+
+    if session_data is None:
+        raise InvalidSessionException("Your session was invalid!")
+
+    return session_data
+   
+
+
+
+def auth_user(
+    user_data: Annotated[Optional[UserGetModel], Depends(get_data_from_session)]
+) -> UserGetModel:
+    if user_data is None:
+        raise AuthException("User is unathorise!")
+    return user_data
+
+
+
+def auth_admin(
+    user_data: Annotated[Optional[UserGetModel], Depends(get_data_from_session)]
+) -> UserGetModel:
+    if user_data is None:
+        raise AuthException("User is unathorise!")
+
+    if not user_data.is_admin:
+        raise ForbidenException("This user isnt an administrator!")
+    
+    return user_data
+
+
+
+
+
+def get_service(
+    repository: Annotated[UsersRepository, Depends(get_repository)],
+    session_manager: Annotated[SessionManager, Depends(get_session_manager)]
+) -> AuthService:
+    return AuthService(repository, session_manager)

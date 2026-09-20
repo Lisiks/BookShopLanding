@@ -4,7 +4,7 @@ from ..utils import PasswordManager
 
 
 class UserBaseModel(BaseModel):
-    username: Annotated[str, Field(max_length=100)]
+    username: Annotated[str, Field(max_length=100, min_length=6)]
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -14,10 +14,10 @@ class UserBaseModel(BaseModel):
 
 
 class UserPostModel(UserBaseModel):
-    plain_password: Annotated[str, Field(max_length=72, alias="plainPassword", exclude=True)]
+    plain_password: Annotated[str, Field(max_length=72, min_length=6, alias="plainPassword", exclude=True)]
 
-    @computed_field("hash_password")
-    def hash_password(self) -> str:
+    @computed_field(alias="passwordHash")
+    def password_hash(self) -> str:
         return PasswordManager.hash_password(self.plain_password)
 
 
@@ -26,15 +26,16 @@ class UserLoginModel(UserBaseModel):
 
 
 
-
 class UserGetModel(UserBaseModel):
     id: int
-    password_hash: Annotated[str, Field(alias="passwordHash")]
     is_admin: Annotated[bool, Field(alias="isAdmin")]
     is_blocked: Annotated[bool, Field(alias="isBlocked")]
 
 
+class UserGetPasswordModel(UserGetModel):
+    password_hash: Annotated[str, Field(alias="passwordHash", exclude=True)]
+  
 
-class UserSingleModel(UserBaseModel):
-    id: int
+
+
    

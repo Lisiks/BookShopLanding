@@ -43,11 +43,20 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
+
       APP_PORT: ${APP_PORT}
       APP_RELOAD: ${APP_RELOAD}
+      APP_SU_LOGIN: ${APP_SU_LOGIN}
+      APP_SU_PASSWORD: ${APP_SU_PASSWORD}
+
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_DB: ${REDIS_DB}
+
       PAGINATION_BOOKS_PAGE_SIZE: ${PAGINATION_BOOKS_PAGE_SIZE}
       PAGINATION_USERS_PAGE_SIZE: ${PAGINATION_USERS_PAGE_SIZE}
       PAGINATION_ORDERS_PAGE_SIZE: ${PAGINATION_ORDERS_PAGE_SIZE}
+
       SESSION_TTL: ${SESSION_TTL}
       SESSION_HASH_KEY: ${SESSION_HASH_KEY}
       SESSION_COOKIE_KEY: ${SESSION_COOKIE_KEY}
@@ -58,6 +67,8 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+    pre_start:
+      - command: ["alembic", "upgrade", "head"]
       
   
 volumes:

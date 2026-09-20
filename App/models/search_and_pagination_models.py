@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator, computed_fie
 from typing import Annotated, Optional
 
 
-from ..core.settings import config
+from ..settings import config
 
 
 class PaginationBase(BaseModel):
@@ -10,10 +10,12 @@ class PaginationBase(BaseModel):
 
 
 class UsersSearchAndPaginationModel(PaginationBase):
-    @computed_field("limit")
+    username: Annotated[Optional[str], Field(max_length=100, default=None)]
+
+    @computed_field
     def limit(self) -> int:
         return config.pagination.users_page_size
 
-    @computed_field("offset")
+    @computed_field
     def offset(self) -> int:
         return self.page * config.pagination.users_page_size
