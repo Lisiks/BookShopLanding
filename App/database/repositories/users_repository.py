@@ -27,7 +27,7 @@ class UsersRepository:
         stmt = select(Users).where(Users.is_admin == is_admin)
 
         if search_params.username is not None:
-            stmt = stmt.where(Users.username.ilike(f"{search_params.username}%"))
+            stmt = stmt.where(Users.username.ilike(f"%{search_params.username}%"))
 
         stmt = stmt.order_by(Users.id).limit(search_params.limit).offset(search_params.offset)
 

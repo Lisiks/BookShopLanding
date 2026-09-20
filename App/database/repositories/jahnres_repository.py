@@ -47,7 +47,7 @@ class JahnresRepository:
         stmt = select(Jahnres)
 
         if search_params.name is not None:
-            stmt = stmt.where(Jahnres.name.ilike(f"{search_params.name}%"))
+            stmt = stmt.where(Jahnres.name.ilike(f"%{search_params.name}%"))
 
         jahnres = await self.__session.scalars(stmt)
         return {jahnre.id: JahnreGetModel.model_validate(jahnre) for jahnre in jahnres.all()}
