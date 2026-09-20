@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
+from fastapi.staticfiles import StaticFiles
 
 import sqlalchemy.exc
 import redis.exceptions
@@ -29,6 +30,8 @@ def create_app() -> FastAPI:
         description=config.app.description,
         version=config.app.version
     )
+
+    app.mount("/static", StaticFiles(directory="App/static"), name="static")
 
     app.include_router(router)
     set_exception_handlers(app)
