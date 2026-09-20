@@ -15,3 +15,7 @@ class RedisManager:
     @classmethod
     def get_client(cls) -> redis.asyncio.Redis:
         return cls.__client
+
+    @classmethod
+    async def health_check(cls) -> bool:
+        return await cls.__client.ping()
