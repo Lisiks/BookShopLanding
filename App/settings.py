@@ -27,6 +27,9 @@ class AppConfig(BaseSettings):
     reload: bool
     su_login: str
     su_password: str
+    name: str
+    description: str
+    version: str
 
     model_config = SettingsConfigDict(
         case_sensitive=False,

@@ -5,7 +5,7 @@ from typing import Annotated, Optional
 from ..services.users_service import UsersService, get_service as get_user_service
 from ..services.auth_service import AuthService, get_service as get_auth_service, auth_user, auth_admin
 from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
-from ..models.search_and_pagination_models import UsersSearchAndPaginationModel
+from ..models.search_and_pagination_models import UsersSearchModel
 from ..settings import config
 from ..exceptions import LoginException
 
@@ -99,7 +99,7 @@ async def grant(
 
 @router.get(path="/", status_code=status.HTTP_200_OK, response_model=dict[int, UserGetModel], dependencies=[Depends(auth_admin)])
 async def get_all(
-    search_params: Annotated[UsersSearchAndPaginationModel, Query()],
+    search_params: Annotated[UsersSearchModel, Query()],
     service: Annotated[UsersService, Depends(get_user_service)]
 ) -> dict[int, UserGetModel]:
     return await service.get_users(search_params)

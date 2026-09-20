@@ -4,7 +4,7 @@ from fastapi import Depends, BackgroundTasks, Cookie
 from .session_manager import SessionManager, get_session_manager
 from ..database.repositories.users_repository import get_repository, UsersRepository
 from ..models.users_models import UserPostModel, UserGetModel
-from ..models.search_and_pagination_models import UsersSearchAndPaginationModel
+from ..models.search_and_pagination_models import UsersSearchModel
 from ..exceptions import ForbidenException
 
 
@@ -21,7 +21,7 @@ class AdminsService:
         await self.__repository.create_user(admin_data, is_admin=True)
 
 
-    async def get_admins(self, search_params: UsersSearchAndPaginationModel) -> dict[int, UserGetModel]:
+    async def get_admins(self, search_params: UsersSearchModel) -> dict[int, UserGetModel]:
         return await self.__repository.get_users(search_params, is_admin=True)
 
 

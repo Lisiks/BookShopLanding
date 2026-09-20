@@ -9,7 +9,7 @@ class PaginationBase(BaseModel):
     page: Annotated[int, Field(ge=0)]
 
 
-class UsersSearchAndPaginationModel(PaginationBase):
+class UsersSearchModel(PaginationBase):
     username: Annotated[Optional[str], Field(max_length=100, default=None)]
 
     @computed_field
@@ -19,3 +19,7 @@ class UsersSearchAndPaginationModel(PaginationBase):
     @computed_field
     def offset(self) -> int:
         return self.page * config.pagination.users_page_size
+
+
+class JahnresSearchModel(BaseModel):
+    name: Annotated[Optional[str], Field(max_length=100, default=None)]

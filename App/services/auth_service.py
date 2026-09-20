@@ -5,7 +5,7 @@ from fastapi import Depends, Cookie
 from .session_manager import SessionManager, get_session_manager
 from ..database.repositories.users_repository import get_repository, UsersRepository
 from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
-from ..models.search_and_pagination_models import UsersSearchAndPaginationModel
+from ..models.search_and_pagination_models import UsersSearchModel
 from ..exceptions import LoginException, ForbidenException, AuthException, InvalidSessionException
 
 from ..utils import PasswordManager

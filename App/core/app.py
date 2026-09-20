@@ -3,14 +3,16 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+import sqlalchemy.exc
+import redis.exceptions
+import socket
+
 from ..utils import RedisManager
 from ..web import router
 from ..database.repositories.users_repository import create_super_user
 from ..settings import config
 from ..exceptions import InvalidSessionException, LoginException, ForbidenException, AuthException, NoRecordException, QueryException
-import sqlalchemy.exc
-import redis.exceptions
-import socket
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None, None]:
@@ -21,7 +23,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None, None]:
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(lifespan=lifespan)
+    app = FastAPI(
+        lifespan=lifespan,
+        title=config.app.name,
+        description=config.app.description,
+        version=config.app.version
+    )
+
     app.include_router(router)
     set_exception_handlers(app)
     return app
@@ -70,6 +78,10 @@ def set_exception_handlers(app: FastAPI) -> None:
 
         if "duplicate key value violates unique constraint \"users_username_key\"" in exception_description:
             return JSONResponse(content={"msg": "User with this username already exists in database"}, status_code=status.HTTP_409_CONFLICT)
+
+        if "duplicate key value violates unique constraint \"jahnres_name_key\"" in exception_description:
+            return JSONResponse(content={"msg": "Jahnre with this username already exists in database"}, status_code=status.HTTP_409_CONFLICT)
+
 
         return JSONResponse(content={"msg": "ya"}, status_code=418)
 

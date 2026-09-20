@@ -4,7 +4,7 @@ from fastapi import Depends
 from typing import Annotated
 
 from ...models.users_models import UserPostModel, UserGetModel, UserGetPasswordModel
-from ...models.search_and_pagination_models import UsersSearchAndPaginationModel
+from ...models.search_and_pagination_models import UsersSearchModel
 from ..shemas import Users
 from ...core.postgresql import get_session, session_fabric
 from ...exceptions import NoRecordException, QueryException
@@ -23,7 +23,7 @@ class UsersRepository:
         await self.__session.commit()
 
 
-    async def get_users(self, search_params: UsersSearchAndPaginationModel, is_admin: bool) -> dict[int, UserGetModel]:
+    async def get_users(self, search_params: UsersSearchModel, is_admin: bool) -> dict[int, UserGetModel]:
         stmt = select(Users).where(Users.is_admin == is_admin)
 
         if search_params.username is not None:
