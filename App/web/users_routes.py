@@ -67,10 +67,7 @@ async def block_user(
     service: Annotated[UsersService, Depends(get_user_service)]
 ) -> UserGetModel:
     await service.block(user_id)
-    return {
-        "msg": "blocked",
-        "user_id": user_id
-    }
+    return {"msg": "blocked"}
 
 
 @router.patch(path="/unblock/{user_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str | int], dependencies=[Depends(auth_admin)])
@@ -79,10 +76,7 @@ async def unblock_user(
     service: Annotated[UsersService, Depends(get_user_service)]
 ) -> UserGetModel:
     await service.unblock(user_id)
-    return {
-        "msg": "unblocked",
-        "user_id": user_id
-    }
+    return {"msg": "unblocked"}
 
 
 @router.patch(path="/grant/{user_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str | int], dependencies=[Depends(auth_admin)])
@@ -91,10 +85,7 @@ async def grant(
     service: Annotated[UsersService, Depends(get_user_service)]
 ) -> UserGetModel:
     await service.grant(user_id)
-    return {
-        "msg": "granted",
-        "user_id": user_id
-    }
+    return {"msg": "granted"}
 
 
 @router.get(path="/", status_code=status.HTTP_200_OK, response_model=dict[int, UserGetModel], dependencies=[Depends(auth_admin)])

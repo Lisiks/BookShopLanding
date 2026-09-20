@@ -2,21 +2,19 @@ from typing import Annotated, Optional
 from fastapi import Depends, Cookie
 
 
-from .session_manager import SessionManager, get_session_manager
 from ..database.repositories.users_repository import get_repository, UsersRepository
 from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
 from ..models.search_and_pagination_models import UsersSearchModel
 from ..exceptions import LoginException, ForbidenException, AuthException, InvalidSessionException
 
-from ..utils import PasswordManager
+from ..utils import PasswordManager, RedisManager
 from ..settings import config
 
 
 
 class AuthService:
-    def __init__(self, repository: UsersRepository, session_manager: SessionManager):
+    def __init__(self, repository: UsersRepository):
         self.__repository = repository
-        self.__session_manager = session_manager
 
 
     async def user_login(self, user_data: UserLoginModel) -> str:
@@ -28,7 +26,7 @@ class AuthService:
         if user.is_blocked:
             raise ForbidenException("This user was blocked!")
 
-        return await self.__session_manager.create_session(user)
+        return await RedisManager.create_session(user)
 
 
     async def admin_login(self, user_data: UserLoginModel) -> str:
@@ -43,23 +41,22 @@ class AuthService:
         if user.is_admin == False:
             raise ForbidenException("This user isnt an administrator!")
 
-        return await self.__session_manager.create_session(user)
+        return await RedisManager.create_session(user)
 
 
     async def logout(self, session: str) -> None:
-        await self.__session_manager.delete_session(session)
+        await RedisManager.delete_session(session)
 
 
 
 async def get_data_from_session(
-    session_manager: Annotated[SessionManager, Depends(get_session_manager)],
     session: Annotated[Optional[str], Cookie(alias=config.session.cookie_key)] = None
 ) -> UserGetModel | None:
     
     if session is None:
         return None
 
-    session_data = await session_manager.read_session(session)
+    session_data = await RedisManager.read_session(session)
 
     if session_data is None:
         raise InvalidSessionException("Your session was invalid!")
@@ -95,6 +92,5 @@ def auth_admin(
 
 def get_service(
     repository: Annotated[UsersRepository, Depends(get_repository)],
-    session_manager: Annotated[SessionManager, Depends(get_session_manager)]
 ) -> AuthService:
-    return AuthService(repository, session_manager)
+    return AuthService(repository)
