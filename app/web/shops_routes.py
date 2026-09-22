@@ -8,7 +8,7 @@ from ..models.search_and_pagination_models import ShopSearchModel
 
 router = APIRouter(prefix="/shops", tags=["🏨 shops"])
 
-@router.post("/create", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def create_shop(
     shop_params: Annotated[ShopPostModel, Form(media_type="application/x-www-form-urlencoded")],
     service: Annotated[ShopService, Depends(get_service)]
@@ -17,7 +17,7 @@ async def create_shop(
     return {"msg": "created"}
 
 
-@router.delete("/delete/{shop_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.delete("/{shop_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def delete_shop(
     shop_id: Annotated[int, Path(gt=0)],
     service: Annotated[ShopService, Depends(get_service)]
@@ -26,7 +26,7 @@ async def delete_shop(
     return {"msg": "deleted"}
 
 
-@router.patch("/modify/{shop_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.patch("/{shop_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def modify_shop(
     shop_params: Annotated[ShopPostModel, Form(media_type="application/x-www-form-urlencoded")],
     shop_id: Annotated[int, Path(gt=0)],

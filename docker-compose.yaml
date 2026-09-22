@@ -35,7 +35,7 @@ services:
   
 
   backend_application:
-    build: /home/lisiks/Рабочий стол/College/4 Курс/Application
+    build: ""
     container_name: backend_container
     environment:
       DB_USER: ${DB_USER}

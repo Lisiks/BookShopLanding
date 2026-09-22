@@ -8,7 +8,7 @@ from ..models.search_and_pagination_models import AuthorsSearchModel
 
 router = APIRouter(prefix="/authors", tags=["✍️ authors"])
 
-@router.post("/create", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def create_author(
     author_params: Annotated[AuthorPostModel, Form(media_type="application/x-www-form-urlencoded")],
     service: Annotated[AuthorsService, Depends(get_service)]
@@ -17,7 +17,7 @@ async def create_author(
     return {"msg": "created"}
 
 
-@router.delete("/delete/{author_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.delete("/{author_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def delete_author(
     author_id: Annotated[int, Path(gt=0)],
     service: Annotated[AuthorsService, Depends(get_service)]
@@ -26,7 +26,7 @@ async def delete_author(
     return {"msg": "deleted"}
 
 
-@router.patch("/modify/{author_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.patch("/{author_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def modify_author(
     author_params: Annotated[AuthorPostModel, Form(media_type="application/x-www-form-urlencoded")],
     author_id: Annotated[int, Path(gt=0)],

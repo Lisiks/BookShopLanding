@@ -8,7 +8,7 @@ from ..models.search_and_pagination_models import BookSearchModel
 
 router = APIRouter(prefix="/books", tags=["📚 books"])
 
-@router.post("/create", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def create_book(
     book_params: Annotated[BookPostModel, Form(media_type="multipart/form-data")],
     service: Annotated[BooksService, Depends(get_service)]
@@ -17,7 +17,7 @@ async def create_book(
     return {"msg": "created"}
 
 
-@router.delete("/delete/{book_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.delete("/{book_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def delete_book(
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[BooksService, Depends(get_service)]
@@ -26,7 +26,7 @@ async def delete_book(
     return {"msg": "deleted"}
 
 
-@router.patch("/modify/{book_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.patch("/{book_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def modify_book(
     book_params: Annotated[BookPostModel, Form(media_type="multipart/form-data")],
     book_id: Annotated[int, Path(gt=0)],

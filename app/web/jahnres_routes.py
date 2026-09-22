@@ -8,7 +8,7 @@ from ..models.search_and_pagination_models import JahnresSearchModel
 
 router = APIRouter(prefix="/jahnres", tags=["✒️ jahnres"])
 
-@router.post("/create", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def create_jahnre(
     jahnre_params: Annotated[JahnrePostModel, Form(media_type="application/x-www-form-urlencoded")],
     service: Annotated[JahnreService, Depends(get_service)]
@@ -17,7 +17,7 @@ async def create_jahnre(
     return {"msg": "created"}
 
 
-@router.delete("/delete/{jahnre_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.delete("/{jahnre_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def delete_jahnre(
     jahnre_id: Annotated[int, Path(gt=0)],
     service: Annotated[JahnreService, Depends(get_service)]
@@ -26,7 +26,7 @@ async def delete_jahnre(
     return {"msg": "deleted"}
 
 
-@router.patch("/modify/{jahnre_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+@router.patch("/{jahnre_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def modify_janhre(
     jahnre_params: Annotated[JahnrePostModel, Form(media_type="application/x-www-form-urlencoded")],
     jahnre_id: Annotated[int, Path(gt=0)],
