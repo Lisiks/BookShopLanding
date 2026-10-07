@@ -34,6 +34,11 @@ class UserGetModel(UserBaseModel):
 
 class UserGetPasswordModel(UserGetModel):
     password_hash: Annotated[str, Field(alias="passwordHash", exclude=True)]
+
+
+
+
+  
   
 
 

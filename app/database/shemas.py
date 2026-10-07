@@ -129,8 +129,6 @@ class Comments(Base):
     datetime: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     text: Mapped[str] = mapped_column(Text)
 
-    user: Mapped["Users"] = relationship()
-
     __table_args__ = (
         PrimaryKeyConstraint("book_id", "user_id", name="comments_pk"),
     )

@@ -2,26 +2,11 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import Annotated
 from datetime import datetime
 
-from .users_models import UserSingleModel
-
-class CommentBaseModel(BaseModel):
-
-    book_id: Annotated[int, Field(alias="bookId")]
-    user_id: Annotated[int, Field(alias="userId")]
-    text: str
+class CommentGetModel(BaseModel):
+    text: Annotated[str, Field(min_length=3, max_length=1000)]
+    datetime: datetime
+    username: str
 
     model_config = ConfigDict(
-        from_attributes=True,
-        validate_by_alias=True,
-        serialize_by_alias=True,
-        extra="ignore"
+        from_attributes=True
     )
-
-
-class CommentPostModel(CommentBaseModel):
-    ...
-
-
-class CommentGetModel(CommentBaseModel):
-    datetime: datetime
-    user: UserSingleModel

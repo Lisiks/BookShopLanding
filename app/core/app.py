@@ -100,6 +100,12 @@ def set_exception_handlers(app: FastAPI) -> None:
         if "duplicate key value violates unique constraint \"books_isbn_key\"" in exception_description:
             return JSONResponse(content={"msg": "Book with thid ISBN already exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
+        if "duplicate key value violates unique constraint \"comments_pk\"" in exception_description:
+            return JSONResponse(content={"msg": "User already commented this book"}, status_code=status.HTTP_409_CONFLICT)
+
+        if "insert or update on table \"comments\" violates foreign key constraint \"books_id_fk\"" in exception_description:
+            return JSONResponse(content={"msg": "Book with this id doesnt exists in database"}, status_code=status.HTTP_409_CONFLICT)
+        
         return JSONResponse(content={"msg": "database incached error"}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @app.exception_handler(redis.exceptions.ConnectionError)
