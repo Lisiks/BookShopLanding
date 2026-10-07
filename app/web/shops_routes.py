@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Path, Query, status, Form
 from typing import Annotated
 
 from ..services.shop_service import ShopService, get_service
-from ..services.auth_service import auth_admin
+from ..utils.auth import auth_admin
 from ..models.shops_models import ShopGetModel, ShopPostModel
 from ..models.search_and_pagination_models import ShopSearchModel
 

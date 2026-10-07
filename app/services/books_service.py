@@ -3,7 +3,7 @@ from  fastapi import Depends, BackgroundTasks
 import asyncio
 
 from ..utils import FileManager
-from ..models.books_models import BookGetModelWithoutORM, BookGetModel, BookPostModel
+from ..models.books_models import BookGetModel, BookPostModel
 from ..models.search_and_pagination_models import BookSearchModel
 from ..database.repositories.book_repository import BooksRepository, get_repository
 

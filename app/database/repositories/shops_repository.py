@@ -22,20 +22,18 @@ class ShopsRepository:
 
 
     async def delete_shop(self, shop_id: int) -> None:
-        shop = await self.__session.get(Shops, shop_id)
-
-        if shop is None:
-            raise NoRecordException(f"Shop with id={shop_id} doesnt exists in database!")
+        stmt = select(Shops).where(Shops.id == shop_id)
+        query_result = await self.__session.execute(stmt)
+        shop = query_result.one()
 
         await self.__session.delete(shop)
         await self.__session.commit()
 
 
     async def modify_shop(self, shop_id: int, shop_params: ShopPostModel) -> None:
-        shop = await self.__session.get(Shops, shop_id)
-        
-        if shop is None:
-            raise NoRecordException(f"Shop with id={shop_id} doesnt exists in database!")
+        stmt = select(Shops).where(Shops.id == shop_id)
+        query_result = await self.__session.execute(stmt)
+        shop = query_result.one()
 
         for field, value in shop_params.model_dump().items():
             setattr(shop, field, value)
@@ -52,6 +50,8 @@ class ShopsRepository:
                 literal(search_params.address).icontains(Shops.street),
                 literal(search_params.address).icontains(Shops.housing)
             ))
+
+        stmt.order_by(Shops.town, Shops.street, Shops.housing)
 
         shops = await self.__session.scalars(stmt)
         return {shop.id: ShopGetModel.model_validate(shop) for shop in shops.all()}

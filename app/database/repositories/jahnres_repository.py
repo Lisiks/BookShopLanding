@@ -7,7 +7,7 @@ from ...models.jahnres_models import JahnreGetModel, JahnrePostModel
 from ...models.search_and_pagination_models import JahnresSearchModel
 from ..shemas import Jahnres
 from ...core.postgresql import get_session
-from ...exceptions import NoRecordException
+
 
 
 
@@ -22,20 +22,19 @@ class JahnresRepository:
 
 
     async def delete_jahnre(self, jahnre_id: int) -> None:
-        jahnre = await self.__session.get(Jahnres, jahnre_id)
-
-        if jahnre is None:
-            raise NoRecordException(f"Jahnre with id={jahnre_id} doesnt exists in database!")
+        stmt = select(Jahnres).where(Jahnres.id == jahnre_id)
+        query_result = await self.__session.scalars(stmt)
+        jahnre = query_result.one()
 
         await self.__session.delete(jahnre)
         await self.__session.commit()
 
 
     async def modify_jahnre(self, jahnre_id: int, jahnre_params: JahnrePostModel) -> None:
-        jahnre = await self.__session.get(Jahnres, jahnre_id)
+        stmt = select(Jahnres).where(Jahnres.id == jahnre_id)
         
-        if jahnre is None:
-            raise NoRecordException(f"Jahnre with id={jahnre_id} doesnt exists in database!")
+        query_result = await self.__session.scalars(stmt)
+        jahnre = query_result.one()
 
         for field, value in jahnre_params.model_dump().items():
             setattr(jahnre, field, value)
@@ -48,6 +47,8 @@ class JahnresRepository:
 
         if search_params.name is not None:
             stmt = stmt.where(Jahnres.name.ilike(f"%{search_params.name}%"))
+            
+        stmt = stmt.order_by(Jahnres.name)
 
         jahnres = await self.__session.scalars(stmt)
         return {jahnre.id: JahnreGetModel.model_validate(jahnre) for jahnre in jahnres.all()}

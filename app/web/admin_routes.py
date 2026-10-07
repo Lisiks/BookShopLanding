@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from typing import Annotated, Optional
 
 from ..services.admins_service import AdminsService, get_service as get_admin_service
-from ..services.auth_service import AuthService, get_service as get_auth_service, auth_user, auth_admin
+from ..utils.auth import auth_admin
 from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
 from ..models.search_and_pagination_models import UsersSearchModel
 from ..settings import config
@@ -13,8 +13,8 @@ from ..exceptions import LoginException
 router = APIRouter(prefix="/admins", tags=["🧑‍💻 admins"])
 
 
-@router.post(path="/register", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
-async def register(
+@router.post(path="/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
+async def create_admin(
     user_params: Annotated[UserPostModel, Form(media_type="application/x-www-form-urlencoded")],
     service: Annotated[AdminsService, Depends(get_admin_service)]
 ) -> dict[str, str]:
@@ -23,15 +23,15 @@ async def register(
 
 
 @router.post(path="/login", status_code=status.HTTP_200_OK, response_model=dict[str, str])
-async def login(
+async def login_admin(
     user_params: Annotated[UserLoginModel, Form(media_type="application/x-www-form-urlencoded")],
-    service: Annotated[AuthService, Depends(get_auth_service)],
+    service: Annotated[AdminsService, Depends(get_admin_service)],
     session: Annotated[Optional[str], Cookie(alias=config.session.cookie_key)] = None
 ) -> dict[str, str]:
     if session is not None:
         raise LoginException("You are already login!")
     
-    sesion = await service.admin_login(user_params)
+    sesion = await service.login_admin(user_params)
 
     responce = JSONResponse(content={"msg": "success"})
     responce.set_cookie(
@@ -45,8 +45,8 @@ async def login(
 
 @router.get(path="/logout", status_code=status.HTTP_200_OK, response_model=dict[str, str])
 async def logout(
-    service: Annotated[AuthService, Depends(get_auth_service)],
-    session: Annotated[Optional[str], Cookie(alias=config.session.cookie_key)] = ""
+    service: Annotated[AdminsService, Depends(get_admin_service)],
+    session: Annotated[str, Cookie(alias=config.session.cookie_key)]
 ) -> dict[str, str]:
     await service.logout(session)
     responce = JSONResponse(content={"msg": "success"})
@@ -54,8 +54,15 @@ async def logout(
     return responce
 
 
+@router.get(path="/users", status_code=status.HTTP_200_OK, response_model=dict[int, UserGetModel], dependencies=[Depends(auth_admin)])
+async def get_all(
+    search_params: Annotated[UsersSearchModel, Query()],
+    service: Annotated[AdminsService, Depends(get_admin_service)]
+) -> dict[int, UserGetModel]:
+    return await service.get_users(search_params)
 
-@router.patch(path="/block/{user_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str | int])
+
+@router.patch(path="/users/block/{user_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str])
 async def block_admin(
     user_id: Annotated[int, Path(gt=0)],
     request_user_data: Annotated[UserGetModel, Depends(auth_admin)],
@@ -65,7 +72,7 @@ async def block_admin(
     return {"msg": "blocked"}
 
 
-@router.patch(path="/unblock/{user_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str | int])
+@router.patch(path="/users/unblock/{user_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str])
 async def unblock_admin(
     user_id: Annotated[int, Path(gt=0)],
     request_user_data: Annotated[UserGetModel, Depends(auth_admin)],
@@ -75,19 +82,3 @@ async def unblock_admin(
     return {"msg": "unblocked"}
 
 
-@router.patch(path="/revoke/{user_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str | int])
-async def revoke(
-    user_id: Annotated[int, Path(gt=0)],
-    request_user_data: Annotated[UserGetModel, Depends(auth_admin)],
-    service: Annotated[AdminsService, Depends(get_admin_service)]
-) -> UserGetModel:
-    await service.revoke(user_id, request_user_data.id)
-    return {"msg": "revoked"}
-
-
-@router.get(path="/", status_code=status.HTTP_200_OK, response_model=dict[int, UserGetModel], dependencies=[Depends(auth_admin)])
-async def get_all(
-    search_params: Annotated[UsersSearchModel, Query()],
-    service: Annotated[AdminsService, Depends(get_admin_service)]
-) -> dict[int, UserGetModel]:
-    return await service.get_admins(search_params)

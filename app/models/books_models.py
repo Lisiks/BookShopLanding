@@ -15,7 +15,7 @@ class BookBaseModel(BaseModel):
 
     title: Annotated[str, Field(max_length=200)]
     description: Annotated[Optional[str], Field(default=None)]
-    author_id: Annotated[Optional[int], Field(alias="authorId", default=None)]
+    author_id: Annotated[Optional[int], Field(gt=0, alias="authorId", default=None)]
     jahnre_id: Annotated[Optional[int], Field(gt=0, alias="jahnreId", default=None)]
     page_count: Annotated[int, Field(gt=0, alias="pageCount")]
     write_year: Annotated[int, Field(alias="writeYear")]
@@ -59,13 +59,11 @@ class BookPostModel(BookBaseModel):
         return value
 
 
-class BookGetModelWithoutORM(BookBaseModel):
+
+class BookGetModel(BookBaseModel):
     id: int
     image_file_path: Annotated[str, Field(alias="imageFilePath")]
     demo_file_path: Annotated[str, Field(alias="demoFilePath", default=None)]
-
-
-class BookGetModel(BookGetModelWithoutORM):
-    author: Optional[AuthorGetModel]
-    jahnre: Optional[JahnreGetModel]
+    author: AuthorGetModel
+    jahnre: JahnreGetModel
 

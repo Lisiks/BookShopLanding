@@ -2,7 +2,7 @@ import redis
 from uuid import uuid4
 
 from ..settings import config
-from ..models.users_models import UserGetPasswordModel, UserGetModel
+from ..models.users_models import UserGetModel
 
 class RedisManager:
     __client: redis.asyncio.Redis
@@ -19,9 +19,6 @@ class RedisManager:
     def get_client(cls) -> redis.asyncio.Redis:
         return cls.__client
 
-
-
-
     @classmethod
     async def health_check(cls) -> bool:
         return await cls.__client.ping()
@@ -31,7 +28,7 @@ class RedisManager:
 
 
     @classmethod
-    async def create_session(cls, user_params: UserGetPasswordModel) -> str:
+    async def create_session(cls, user_params: UserGetModel) -> str:
         session = str(uuid4())
         
         await cls.__client.hset(
@@ -45,7 +42,7 @@ class RedisManager:
 
 
     @classmethod
-    async def read_session(cls, session: str) -> str | None:
+    async def read_session(cls, session: str) -> UserGetModel | None:
         user_json_string = await cls.__client.hget(config.session.hash_key, session)
         return UserGetModel.model_validate_json(user_json_string.decode()) if user_json_string is not None else None
 
@@ -55,7 +52,6 @@ class RedisManager:
         await self.__client.hdel(config.session.hash_key, session)
 
         
-
     @classmethod
     async def delete_sessions_by_id(self, user_id: int) -> None:
         sessions_dict = await self.__client.hgetall(config.session.hash_key)

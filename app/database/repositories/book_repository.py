@@ -4,11 +4,10 @@ from sqlalchemy import select
 from fastapi import Depends
 from typing import Annotated, Optional
 
-from ...models.books_models import BookPostModel, BookGetModel, BookGetModelWithoutORM
+from ...models.books_models import BookPostModel, BookGetModel
 from ...models.search_and_pagination_models import BookSearchModel
 from ..shemas import Books
 from ...core.postgresql import get_session
-from ...exceptions import NoRecordException
 
 
 
@@ -22,13 +21,16 @@ class BooksRepository:
         await self.__session.commit()
 
 
-    async def delete_book(self, book_id: int) -> BookGetModelWithoutORM:
-        book = await self.__session.get(Books, book_id)
+    async def delete_book(self, book_id: int) -> BookGetModel:
+        stmt = select(Books).options(
+            joinedload(Books.author),
+            joinedload(Books.jahnre)
+        ).where(Books.id == book_id)
 
-        if book is None:
-            raise NoRecordException(f"Book with id={book_id} doesnt exists in database!")
+        query_result = await self.__session.scalars(stmt)
+        book = query_result.one()
 
-        old_book_screen = BookGetModelWithoutORM.model_validate(book, by_alias=False, by_name=True)
+        old_book_screen = BookGetModel.model_validate(book, by_alias=False, by_name=True)
 
         await self.__session.delete(book)
         await self.__session.commit()
@@ -36,13 +38,16 @@ class BooksRepository:
         return old_book_screen
 
 
-    async def modify_book(self, book_id: int, book_params: BookPostModel, image_src: str, demo_src: str) -> BookGetModelWithoutORM:
-        book = await self.__session.get(Books, book_id)
-        
-        if book is None:
-            raise NoRecordException(f"Book with id={book_id} doesnt exists in database!")
+    async def modify_book(self, book_id: int, book_params: BookPostModel, image_src: str, demo_src: str) -> BookGetModel:
+        stmt = select(Books).options(
+            joinedload(Books.author),
+            joinedload(Books.jahnre)
+        ).where(Books.id == book_id)
 
-        old_book_screen = BookGetModelWithoutORM.model_validate(book, by_alias=False, by_name=True)
+        query_result = await self.__session.scalars(stmt)
+        book = query_result.one()
+
+        old_book_screen = BookGetModel.model_validate(book, by_alias=False, by_name=True)
 
         for field, value in book_params.model_dump(by_alias=False).items():
             setattr(book, field, value)
@@ -56,11 +61,13 @@ class BooksRepository:
 
 
     async def get_by_id(self, book_id: int) -> BookGetModel:
-        stmt = select(Books).options(joinedload(Books.author), joinedload(Books.jahnre))
-        book = await self.__session.scalar(stmt)
-          
-        if book is None:
-            raise NoRecordException(f"Book with id={book_id} doesnt exists in database!")
+        stmt = select(Books).options(
+            joinedload(Books.author),
+            joinedload(Books.jahnre)
+        ).where(Books.id == book_id)
+
+        query_result = await self.__session.scalars(stmt)
+        book = query_result.one()
 
         return BookGetModel.model_validate(book, by_alias=False, by_name=True)
 

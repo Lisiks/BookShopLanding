@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict, computed_field
-from typing import Annotated
+from typing import Annotated, Optional
 from ..utils import PasswordManager
 
 
@@ -30,10 +30,7 @@ class UserGetModel(UserBaseModel):
     id: int
     is_admin: Annotated[bool, Field(alias="isAdmin")]
     is_blocked: Annotated[bool, Field(alias="isBlocked")]
-
-
-class UserGetPasswordModel(UserGetModel):
-    password_hash: Annotated[str, Field(alias="passwordHash", exclude=True)]
+    password_hash: Annotated[Optional[str], Field(alias="passwordHash", exclude=True)] = None
 
 
 

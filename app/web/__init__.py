@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from .books_routes import router as books_router
 from .admin_routes import router as admin_router
-from .users_routes import router as users_router
+from .account_routes import router as users_router
 from .healthcheck import router as health_router
 from .jahnres_routes import router as jahnres_router
 from .authors_routes import router as authors_router

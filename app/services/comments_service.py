@@ -17,18 +17,11 @@ class CommentsService:
     async def delete_comment(self, book_id: int, user_id: int) -> None:
         await self.__repository.delete_comment(book_id, user_id)
 
-    async def get_all(self, book_id: int, user_id: int | None) -> dict[str, CommentGetModel]:
-        if user_id is None:
-            user_comment = None
-            comments = await self.__repository.get_all(book_id)
-        else:
-            user_comment = await self.__repository.get_by_user_id(book_id, user_id)
-            comments = await self.__repository.get_all(book_id, user_id)
+    async def get_by_id(self, book_id: int, user_id: int) -> CommentGetModel:
+        return await self.__repository.get_by_id(book_id, user_id)
 
-        return {
-            "userComment": user_comment,
-            "comments": comments
-        }
+    async def get_all(self, book_id) -> dict[int, CommentGetModel]:
+        return await self.__repository.get_all(book_id)
 
 
 def get_service(repository: Annotated[CommentsRepository, Depends(get_repository)]) -> CommentsService:

@@ -27,6 +27,7 @@ class BookSearchModel(PaginationBase):
 
 class UsersSearchModel(PaginationBase):
     username: Annotated[Optional[str], Field(max_length=100, default=None)]
+    is_admin: bool
 
     @computed_field
     def limit(self) -> int:

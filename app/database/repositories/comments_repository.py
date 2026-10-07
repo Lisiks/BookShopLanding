@@ -21,18 +21,17 @@ class CommentsRepository:
 
 
     async def delete_comment(self, book_id: int, user_id: int) -> None:
-        comment = await self.__session.get(Comments, (book_id, user_id))
-
-        if comment is None:
-            raise NoRecordException(f"This user hasn't comment on book with id={book_id}!")
+        stmt = select(Comments).where(and_(Comments.book_id == book_id, Comments.user_id == user_id))
+        query_result = await self.__session.scalars(stmt)
+        comment = query_result.one()
 
         await self.__session.delete(comment)
         await self.__session.commit()
 
         
-    async def get_by_user_id(self, book_id: int, user_id: int) -> CommentGetModel | None:
+    async def get_by_id(self, book_id: int, user_id: int) -> CommentGetModel:
         stmt = select(
-            Comments.text, Comments.datetime, Users.username
+            Comments.text, Comments.datetime, Users.username, Users.id.label("user_id")
         ).join(
             Users
         ).where(
@@ -42,22 +41,19 @@ class CommentsRepository:
         comment = await self.__session.execute(stmt)
         comment = comment.one()
         
-        return CommentGetModel.model_validate(comment) if comment is not None else None
+        return CommentGetModel.model_validate(comment)
 
-    async def get_all(self, book_id: int, expired_user_id: int | None = None) -> list[CommentGetModel]:
+    async def get_all(self, book_id: int) -> list[CommentGetModel]:
         stmt = select(
-            Comments.text, Comments.datetime, Users.username
+            Comments.text, Comments.datetime, Users.username, Users.id.label("user_id")
         ).join(
             Users
         ).where(Comments.book_id == book_id)
 
-        if expired_user_id is not None:
-            stmt = stmt.where(Comments.user_id != expired_user_id)
-
         stmt = stmt.order_by(Comments.datetime)
 
         comments = await self.__session.execute(stmt)
-        return [CommentGetModel.model_validate(comment) for comment in comments.all()]
+        return {comment.user_id : CommentGetModel.model_validate(comment) for comment in comments.all()}
 
 
 def get_repository(session: Annotated[AsyncSession, Depends(get_session)]) -> CommentsRepository:

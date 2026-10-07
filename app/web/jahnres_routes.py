@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Path, Query, status, Form
 from typing import Annotated
 
 from ..services.jahnres_service import JahnreService, get_service
-from ..services.auth_service import auth_admin
+from ..utils.auth import auth_admin
 from ..models.jahnres_models import JahnreGetModel, JahnrePostModel
 from ..models.search_and_pagination_models import JahnresSearchModel
 

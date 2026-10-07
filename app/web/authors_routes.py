@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Path, Query, status, Form
 from typing import Annotated
 
 from ..services.authors_service import AuthorsService, get_service
-from ..services.auth_service import auth_admin
+from ..utils.auth import auth_admin
 from ..models.authors_models import AuthorGetModel, AuthorPostModel
 from ..models.search_and_pagination_models import AuthorsSearchModel
 

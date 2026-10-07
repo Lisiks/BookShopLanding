@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Path, Query, status, Form
 from typing import Annotated, Optional
 
 from ..services.books_service import BooksService, get_service as get_book_service
-from ..services.auth_service import auth_admin, auth_user, get_data_from_session
+from ..utils.auth import auth_admin, auth_user
 from ..models.books_models import BookGetModel, BookPostModel
 from ..models.search_and_pagination_models import BookSearchModel
 
@@ -76,10 +76,19 @@ async def delete_comment(
     await service.delete_comment(book_id, user_data.id)
     return {"msg": "deleted"}
 
-@router.get("/{book_id}/comments", status_code=status.HTTP_200_OK, response_model=dict[str, CommentGetModel | list[CommentGetModel] | None])
+
+@router.get("/{book_id}/comments/me", status_code=status.HTTP_200_OK, response_model=CommentGetModel)
+async def get_comment_me(
+    book_id: Annotated[int, Path(gt=0)],
+    service: Annotated[CommentsService, Depends(get_comment_service)],
+    user_data: Annotated[UserGetModel, Depends(auth_user)]
+) -> CommentGetModel:
+    return await service.get_by_id(book_id, user_data.id)
+
+
+@router.get("/{book_id}/comments", status_code=status.HTTP_200_OK, response_model=dict[int, CommentGetModel])
 async def get_all_comments(
     book_id: Annotated[int, Path(gt=0)],
-    user_data: Annotated[Optional[UserGetModel], Depends(get_data_from_session)],
     service: Annotated[CommentsService, Depends(get_comment_service)]
 ) -> dict[str, CommentGetModel | list[CommentGetModel]]:
-    return await service.get_all(book_id, user_data.id if user_data else None)
+    return await service.get_all(book_id)

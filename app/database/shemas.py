@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Text, ForeignKey, Numeric, CHAR, CheckConstraint, Table, Column, PrimaryKeyConstraint, Boolean, DateTime, func, Enum, Index, UniqueConstraint
+from sqlalchemy import String, Text, ForeignKey, Numeric, CHAR, CheckConstraint, PrimaryKeyConstraint, Boolean, DateTime, func, Enum, Index
 from typing import Optional
 from datetime import datetime
 import enum
@@ -25,6 +25,10 @@ class Authors(Base):
     i: Mapped[str] = mapped_column(String(100))
     o: Mapped[str] = mapped_column(String(100))
 
+    __table_args__ = (
+        Index("fio_idx", "f", "i", "o", unique=False),
+    )
+
 
 
 
@@ -34,8 +38,8 @@ class Books(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(200), index=True)
     description: Mapped[Optional[str]] = mapped_column(Text)
-    author_id: Mapped[Optional[int]] = mapped_column(ForeignKey("authors.id", ondelete="SET NULL", onupdate="CASCADE", name="authors_id_fk"))
-    jahnre_id: Mapped[Optional[int]] = mapped_column(ForeignKey("jahnres.id", ondelete="SET NULL", onupdate="CASCADE", name="jahnres_id_fk"))
+    author_id: Mapped[int] = mapped_column(ForeignKey("authors.id", ondelete="RESTRICT", onupdate="CASCADE", name="authors_id_fk"))
+    jahnre_id: Mapped[int] = mapped_column(ForeignKey("jahnres.id", ondelete="RESTRICT", onupdate="CASCADE", name="jahnres_id_fk"))
     page_count: Mapped[int]
     write_year: Mapped[int]
     price: Mapped[float] = mapped_column(Numeric(10, 2), index=True)
@@ -83,7 +87,7 @@ class Shops(Base):
     housing: Mapped[str] = mapped_column(String(6))
 
     __table_args__ = (
-        UniqueConstraint("town", "street", "housing", name="address_uq"),
+        Index("address_idx", "town", "street", "housing", unique=True),
     )
 
 
@@ -92,7 +96,7 @@ class Orders(Base):
     __tablename__ = "orders"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    datetime: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    datetime: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), index=True)
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL", onupdate="CASCADE", name="user_id_fk"))
     status: Mapped[OrderStatuses] = mapped_column(Enum(OrderStatuses), index=True)
     shop_id: Mapped[Optional[int]] = mapped_column(ForeignKey("shops.id", ondelete="SET NULL", onupdate="CASCADE", name="shops_id_fk"))
@@ -126,7 +130,7 @@ class Comments(Base):
     book_id: Mapped[int] = mapped_column(ForeignKey("books.id", name="books_id_fk", ondelete="CASCADE", onupdate="CASCADE"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", name="users_id_fk", ondelete="CASCADE", onupdate="CASCADE"))
     
-    datetime: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    datetime: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), index=True)
     text: Mapped[str] = mapped_column(Text)
 
     __table_args__ = (

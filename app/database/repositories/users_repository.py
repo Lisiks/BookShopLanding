@@ -3,11 +3,11 @@ from sqlalchemy import select
 from fastapi import Depends
 from typing import Annotated
 
-from ...models.users_models import UserPostModel, UserGetModel, UserGetPasswordModel
+from ...models.users_models import UserPostModel, UserGetModel
 from ...models.search_and_pagination_models import UsersSearchModel
 from ..shemas import Users
 from ...core.postgresql import get_session, session_fabric
-from ...exceptions import NoRecordException, QueryException
+
 
 from ...settings import config
 
@@ -23,8 +23,8 @@ class UsersRepository:
         await self.__session.commit()
 
 
-    async def get_users(self, search_params: UsersSearchModel, is_admin: bool) -> dict[int, UserGetModel]:
-        stmt = select(Users).where(Users.is_admin == is_admin)
+    async def get_users(self, search_params: UsersSearchModel) -> dict[int, UserGetModel]:
+        stmt = select(Users).where(Users.is_admin == search_params.is_admin)
 
         if search_params.username is not None:
             stmt = stmt.where(Users.username.ilike(f"%{search_params.username}%"))
@@ -35,62 +35,29 @@ class UsersRepository:
 
         return {user.id: UserGetModel.model_validate(user, by_alias=False, by_name=True) for user in users.all()}
 
-    async def grant_user(self, user_id: int) -> None:
-        user = await self.__session.get(Users, user_id)
 
-        if user is None:
-            raise NoRecordException(f"User with id={user_id} doesnt exists in database!")
-
-        if user.is_admin == True:
-            raise QueryException("This user is already an administrator!")
-
-
-        user.is_admin = True
-        await self.__session.commit()
-
-    async def revoke_user(self, user_id: int) -> None:
-        user = await self.__session.get(Users, user_id)
-        
-        if user is None:
-            raise NoRecordException(f"User with id={user_id} doesnt exists in database!")
-
-        if user.is_admin is not True:
-            raise QueryException("This user isn't administrator!")
-
-        user.is_admin = False
-        await self.__session.commit()
-
-
-    async def block_user(self, user_id: int, is_admin: bool) -> None:
-        user = await self.__session.get(Users, user_id)
-
-        if user is None:
-            raise NoRecordException(f"User with id={user_id} doesnt exists in database!")
-
-        if user.is_admin is not is_admin:
-            raise QueryException("This user isn't administrator!" if is_admin else "This user is administrator!")
+    async def block_user(self, user_id: int) -> None:
+        stmt = select(Users).where(Users.id == user_id)
+        query_result = await self.__session.scalars(stmt)
+        user = query_result.one()
 
         user.is_blocked = True
         await self.__session.commit()
 
 
-    async def unblock_user(self, user_id: int, is_admin: bool) -> None:
-        user = await self.__session.get(Users, user_id)
-
-        if user is None:
-            raise NoRecordException(f"User with id={user_id} doesnt exists in database!")
-
-        if user.is_admin is not is_admin:
-            raise QueryException("This user isn't administrator!" if is_admin else "This user is administrator!")
+    async def unblock_user(self, user_id: int) -> None:
+        stmt = select(Users).where(Users.id == user_id)
+        query_result = await self.__session.scalars(stmt)
+        user = query_result.one()
 
         user.is_blocked = False
         await self.__session.commit()
     
     
-    async def get_by_name(self, username: str) -> UserGetPasswordModel | None:
+    async def get_by_name(self, username: str) -> UserGetModel | None:
         stmt = select(Users).where(Users.username == username)
         user = await self.__session.scalar(stmt)
-        return UserGetPasswordModel.model_validate(user, by_alias=False, by_name=True) if user is not None else None
+        return UserGetModel.model_validate(user, by_alias=False, by_name=True) if user is not None else None
 
 
 def get_repository(session: Annotated[AsyncSession, Depends(get_session)]) -> UsersRepository:
