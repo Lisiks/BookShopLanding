@@ -71,6 +71,11 @@ class BooksRepository:
 
         return BookGetModel.model_validate(book, by_alias=False, by_name=True)
 
+    async def get_by_list(self, book_ids_list: list[int]) -> dict[int, BookGetModel]:
+        stmt = select(Books).options(joinedload(Books.author), joinedload(Books.jahnre)).where(Books.id.in_(book_ids_list))
+        books = await self.__session.scalars(stmt)
+        return {book.id : BookGetModel.model_validate(book, by_alias=False, by_name=True) for book in books.all()}
+
 
     async def get_all(self, search_params: BookSearchModel) -> dict[int, BookGetModel]:
         stmt = select(Books).options(joinedload(Books.author), joinedload(Books.jahnre))

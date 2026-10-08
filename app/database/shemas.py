@@ -2,7 +2,9 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, ForeignKey, Numeric, CHAR, CheckConstraint, PrimaryKeyConstraint, Boolean, DateTime, func, Enum, Index
 from typing import Optional
 from datetime import datetime
-import enum
+
+
+from ..enums import OrderStatuses
 
 
 
@@ -66,13 +68,6 @@ class Users(Base):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False, server_default="FALSE", index=True)
     is_blocked: Mapped[bool] = mapped_column(Boolean, default=False, server_default="FALSE")
 
-
-
-class OrderStatuses(enum.Enum):
-    InAssembly = "В сборке"
-    Assembled = "Собран"
-    Received = "Получен"
-    Canceled = "Отменен"
 
 
 

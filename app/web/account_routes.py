@@ -3,10 +3,13 @@ from fastapi.responses import JSONResponse
 from typing import Annotated, Optional
 
 from ..services.accounts_service import AccountsService, get_service as get_account_service
+from ..services.orders_service import OrdersService, get_service as get_order_service
 
 from ..utils.auth import auth_user
+
+from ..models.orders_models import OrderGetModel
 from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
-from ..models.search_and_pagination_models import UsersSearchModel
+from ..models.search_and_pagination_models import OrderSearchModel
 from ..settings import config
 from ..exceptions import LoginException
 
@@ -60,3 +63,12 @@ async def me(
     session_data: Annotated[UserGetModel, Depends(auth_user)]
 ) -> UserGetModel:
     return session_data
+
+
+@router.get(path="/me/orders", status_code=status.HTTP_200_OK, response_model=dict[int, OrderGetModel])
+async def get_orders(
+    user_data: Annotated[UserGetModel, Depends(auth_user)],
+    service: Annotated[OrdersService, Depends(get_order_service)],
+    search_params: Annotated[OrderSearchModel, Query()]
+) -> dict[int, OrderGetModel]:
+    return service.get_by_user_id(search_params, user_data.id)

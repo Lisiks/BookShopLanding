@@ -67,3 +67,14 @@ class BookGetModel(BookBaseModel):
     author: AuthorGetModel
     jahnre: JahnreGetModel
 
+
+class BookShortModel(BaseModel):
+    id: int
+    title: str
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        extra="ignore"
+    )
+
+

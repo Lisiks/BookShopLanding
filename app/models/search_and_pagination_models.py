@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator, computed_field
 from typing import Annotated, Optional
+from ..enums import OrderStatuses
 
 
 from ..settings import config
@@ -48,3 +49,16 @@ class AuthorsSearchModel(BaseModel):
 
 class ShopSearchModel(BaseModel):
     address: Annotated[Optional[str], Field(max_length=300, default=None)]
+
+
+class OrderSearchModel(PaginationBase):
+    status: Optional[OrderStatuses] = None
+    shop_id: Annotated[Optional[int], Field(alias="shopId")] = None
+
+    @computed_field
+    def limit(self) -> int:
+        return config.pagination.orders_page_size
+
+    @computed_field
+    def offset(self) -> int:
+        return self.page * config.pagination.orders_page_size

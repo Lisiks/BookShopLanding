@@ -85,6 +85,9 @@ def set_exception_handlers(app: FastAPI) -> None:
 
         if "update or delete on table \"jahnres\" violates foreign key constraint \"jahnres_id_fk\" on table \"books\"" in exception_description:
             return JSONResponse(content={"msg": "Book with this jahnre exists in database"}, status_code=status.HTTP_409_CONFLICT)
+
+        if "insert or update on table \"orders\" violates foreign key constraint \"shops_id_fk\"" in exception_description:
+            return JSONResponse(content={"msg": "Shop with this id doesnt exists in database"}, status_code=status.HTTP_409_CONFLICT)
         
         return JSONResponse(content={"msg": "database incached error"}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

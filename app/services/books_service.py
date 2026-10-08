@@ -59,6 +59,8 @@ class BooksService:
             )
             raise
 
+    async def get_by_list(self, book_ids_list: list[int]) -> dict[int, BookGetModel]:
+        return await self.__repository.get_by_list(book_ids_list)
 
     async def get_by_id(self, book_id: int) -> BookGetModel:
         return await self.__repository.get_by_id(book_id)

@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, Path, Query, status, Form
+from fastapi import APIRouter, Depends, Path, Query, status, Form, Body
 from typing import Annotated, Optional
 
 from ..services.books_service import BooksService, get_service as get_book_service
 from ..utils.auth import auth_admin, auth_user
 from ..models.books_models import BookGetModel, BookPostModel
 from ..models.search_and_pagination_models import BookSearchModel
-
+from ..models.shoppig_cart_models import ShppingCartModel
 from ..services.comments_service import CommentsService, get_service as get_comment_service
 from ..models.comments_models import CommentGetModel
 from ..models.users_models import UserGetModel
@@ -54,6 +54,14 @@ async def get_all(
     service: Annotated[BooksService, Depends(get_book_service)]
 ) -> dict[int, BookGetModel]:
     return await service.get_all(search_params)
+
+
+@router.post("/list", status_code=status.HTTP_200_OK, response_model=dict[int, BookGetModel], dependencies=[Depends(auth_user)])
+async def get_by_list(
+    shoping_cart: Annotated[ShppingCartModel, Body()],
+    service: Annotated[BooksService, Depends(get_book_service)]
+) -> dict[int, BookGetModel]:
+    return await service.get_by_list(shoping_cart.items)
 
 
 @router.post("/{book_id}/comments", status_code=status.HTTP_201_CREATED, response_model=dict[str, str])
