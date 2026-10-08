@@ -38,6 +38,35 @@ class AppConfig(BaseSettings):
     )
 
 
+
+class Namespaces(BaseSettings):
+    app: str
+    books: str
+    jahnres: str
+    authors: str
+    comments: str
+    orders: str
+    shops: str
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="NAMESPACE_"
+    )
+
+
+class CacheConfig(BaseSettings):
+    ttl: Annotated[int, Field(gt=0)]
+    namespaces: Namespaces = Namespaces()
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="CACHE_"
+    )
+  
+
+
 class RedisConfig(BaseSettings):
     host: str
     port: int
@@ -81,6 +110,7 @@ class Config(BaseSettings):
     pagination: PaginationConfig = PaginationConfig()
     redis: RedisConfig = RedisConfig()
     session: SessionConfig = SessionConfig()
+    cache: CacheConfig = CacheConfig()
 
 
 config = Config()

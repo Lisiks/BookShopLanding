@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from fastapi.staticfiles import StaticFiles
-
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_cache import FastAPICache
 
 from .exception_handlers import set_exception_handlers
 from ..utils import RedisManager
@@ -16,6 +17,7 @@ from ..settings import config
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None, None]:
     await RedisManager.init_client()
     await create_super_user()
+    FastAPICache.init(RedisBackend(RedisManager.get_client()), prefix=config.cache.namespaces.app)
     yield
 
 

@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
-from sqlalchemy import select, literal, union_all
+from sqlalchemy import select, literal, union_all, desc
 from sqlalchemy.exc import NoResultFound
 from fastapi import Depends
 from typing import Annotated, Optional
@@ -43,13 +43,15 @@ class OrdersRepository:
         await self.__session.commit()
 
 
-    async def change_order_status(self, order_id: int, new_status: OrderStatuses) -> None:
+    async def change_order_status(self, order_id: int, new_status: OrderStatuses) -> int:
         stmt = select(Orders).where(Orders.id == order_id)
         query_result = await self.__session.scalars(stmt)
         order = query_result.one()
 
         order.status = new_status
         await self.__session.commit()
+
+        return order.user_id
 
 
     async def get_all(self, search_params: OrderSearchModel, user_id: Optional[int] = None) -> dict[int, OrderGetModel]:
@@ -68,7 +70,7 @@ class OrdersRepository:
         if user_id is not None:
             stmt = stmt.where(Orders.user_id == user_id)
 
-        stmt = stmt.limit(search_params.limit).offset(search_params.offset)
+        stmt = stmt.order_by(desc(Orders.datetime)).limit(search_params.limit).offset(search_params.offset)
 
         orders = await self.__session.scalars(stmt)
         return {order.id: OrderGetModel.model_validate(order, by_alias=False, by_name=True) for order in orders.all()}

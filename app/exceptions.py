@@ -10,13 +10,7 @@ class ForbidenException(Exception):
     ...
 
 
-class AuthException(Exception):
-    ...
-
-
 class InvalidSessionException(Exception):
     ...
 
 
-class QueryException(Exception):
-    ...

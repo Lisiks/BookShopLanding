@@ -8,7 +8,7 @@ import socket
 
 
 from ..settings import config
-from ..exceptions import InvalidSessionException, LoginException, ForbidenException, AuthException, QueryException
+from ..exceptions import InvalidSessionException, LoginException, ForbidenException
 
 
 
@@ -26,11 +26,6 @@ def set_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(content={"msg": "This resourses was not found!"}, status_code=status.HTTP_404_NOT_FOUND)
 
 
-    @app.exception_handler(AuthException)
-    def auth_exception_handler(request: Request, exc: AuthException) -> JSONResponse:
-        return JSONResponse(content={"msg": exc.args[0]}, status_code=status.HTTP_401_UNAUTHORIZED)
-
-
     @app.exception_handler(LoginException)
     def login_exception_handler(request: Request, exc: LoginException) -> JSONResponse:
         if exc.args[0] == "You are already login!":
@@ -42,11 +37,6 @@ def set_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(ForbidenException)
     def forbiden_exception_handler(request: Request, exc: ForbidenException) -> JSONResponse:
         return JSONResponse(content={"msg": exc.args[0]}, status_code=status.HTTP_403_FORBIDDEN)
-
-
-    @app.exception_handler(QueryException)
-    def query_excception_handler(request: Request, exc: QueryException) -> JSONResponse:
-        return JSONResponse(content={"msg": exc.args[0]}, status_code=status.HTTP_400_BAD_REQUEST)
 
 
     @app.exception_handler(sqlalchemy.exc.IntegrityError)

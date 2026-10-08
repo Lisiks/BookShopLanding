@@ -1,6 +1,7 @@
 from fastapi import Depends, Form, APIRouter, status, Cookie, Path, Query
 from fastapi.responses import JSONResponse
 from typing import Annotated, Optional
+from fastapi_cache.decorator import cache
 
 from ..services.accounts_service import AccountsService, get_service as get_account_service
 from ..services.orders_service import OrdersService, get_service as get_order_service
@@ -12,7 +13,7 @@ from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
 from ..models.search_and_pagination_models import OrderSearchModel
 from ..settings import config
 from ..exceptions import LoginException
-
+from ..utils.cache_key_builders import user_orders_key_builder
 
 router = APIRouter(prefix="/accounts", tags=["👥 accounts"])
 
@@ -66,9 +67,10 @@ async def me(
 
 
 @router.get(path="/me/orders", status_code=status.HTTP_200_OK, response_model=dict[int, OrderGetModel])
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.orders, key_builder=user_orders_key_builder)
 async def get_orders(
     user_data: Annotated[UserGetModel, Depends(auth_user)],
     service: Annotated[OrdersService, Depends(get_order_service)],
     search_params: Annotated[OrderSearchModel, Query()]
 ) -> dict[int, OrderGetModel]:
-    return service.get_by_user_id(search_params, user_data.id)
+    return await service.get_by_user_id(search_params, user_data.id)

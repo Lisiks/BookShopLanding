@@ -1,10 +1,15 @@
 from fastapi import APIRouter, Depends, Path, Query, status, Form
 from typing import Annotated
+from fastapi_cache.decorator import cache
 
 from ..services.shop_service import ShopService, get_service
 from ..utils.auth import auth_admin
 from ..models.shops_models import ShopGetModel, ShopPostModel
 from ..models.search_and_pagination_models import ShopSearchModel
+from ..settings import config
+
+from ..utils.cache_key_builders import default_search_key_builder
+
 
 router = APIRouter(prefix="/shops", tags=["🏨 shops"])
 
@@ -37,6 +42,7 @@ async def modify_shop(
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, ShopGetModel])
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.shops, key_builder=default_search_key_builder)
 async def get_all(
     search_params: Annotated[ShopSearchModel, Query()],
     service: Annotated[ShopService, Depends(get_service)]

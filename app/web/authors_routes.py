@@ -1,10 +1,14 @@
 from fastapi import APIRouter, Depends, Path, Query, status, Form
 from typing import Annotated
+from fastapi_cache.decorator import cache
 
 from ..services.authors_service import AuthorsService, get_service
 from ..utils.auth import auth_admin
 from ..models.authors_models import AuthorGetModel, AuthorPostModel
 from ..models.search_and_pagination_models import AuthorsSearchModel
+from ..settings import config
+
+from ..utils.cache_key_builders import default_search_key_builder
 
 router = APIRouter(prefix="/authors", tags=["✍️ authors"])
 
@@ -37,6 +41,7 @@ async def modify_author(
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, AuthorGetModel])
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.authors, key_builder=default_search_key_builder)
 async def get_all(
     search_params: Annotated[AuthorsSearchModel, Query()],
     service: Annotated[AuthorsService, Depends(get_service)]

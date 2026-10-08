@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, desc
 from sqlalchemy.orm import joinedload
 from fastapi import Depends
 from typing import Annotated
@@ -50,7 +50,7 @@ class CommentsRepository:
             Users
         ).where(Comments.book_id == book_id)
 
-        stmt = stmt.order_by(Comments.datetime)
+        stmt = stmt.order_by(desc(Comments.datetime))
 
         comments = await self.__session.execute(stmt)
         return {comment.user_id : CommentGetModel.model_validate(comment) for comment in comments.all()}

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Path, Query, status, Form, Body
 from typing import Annotated, Optional
+from fastapi_cache.decorator import cache
 
 from ..services.books_service import BooksService, get_service as get_book_service
 from ..utils.auth import auth_admin, auth_user
@@ -9,6 +10,11 @@ from ..models.shoppig_cart_models import ShppingCartModel
 from ..services.comments_service import CommentsService, get_service as get_comment_service
 from ..models.comments_models import CommentGetModel
 from ..models.users_models import UserGetModel
+from ..settings import config
+
+from ..utils.cache_key_builders import (default_search_key_builder, books_page_key_builder, 
+                                        comments_key_builder, user_comment_key_builder)
+
 
 router = APIRouter(prefix="/books", tags=["📚 books"])
 
@@ -41,6 +47,7 @@ async def modify_book(
 
 
 @router.get("/{book_id}", status_code=status.HTTP_200_OK, response_model=BookGetModel)
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.books, key_builder=books_page_key_builder)
 async def get_by_id(
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[BooksService, Depends(get_book_service)]
@@ -49,6 +56,7 @@ async def get_by_id(
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, BookGetModel])
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.books, key_builder=default_search_key_builder)
 async def get_all(
     search_params: Annotated[BookSearchModel, Query()],
     service: Annotated[BooksService, Depends(get_book_service)]
@@ -86,6 +94,7 @@ async def delete_comment(
 
 
 @router.get("/{book_id}/comments/me", status_code=status.HTTP_200_OK, response_model=CommentGetModel)
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.comments, key_builder=user_comment_key_builder)
 async def get_comment_me(
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[CommentsService, Depends(get_comment_service)],
@@ -95,6 +104,7 @@ async def get_comment_me(
 
 
 @router.get("/{book_id}/comments", status_code=status.HTTP_200_OK, response_model=dict[int, CommentGetModel])
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.comments, key_builder=comments_key_builder)
 async def get_all_comments(
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[CommentsService, Depends(get_comment_service)]

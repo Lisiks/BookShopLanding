@@ -1,10 +1,14 @@
 from fastapi import APIRouter, Depends, Path, Query, status, Form
 from typing import Annotated
+from fastapi_cache.decorator import cache
 
 from ..services.jahnres_service import JahnreService, get_service
 from ..utils.auth import auth_admin
 from ..models.jahnres_models import JahnreGetModel, JahnrePostModel
 from ..models.search_and_pagination_models import JahnresSearchModel
+from ..settings import config
+
+from ..utils.cache_key_builders import default_search_key_builder
 
 router = APIRouter(prefix="/jahnres", tags=["✒️ jahnres"])
 
@@ -37,6 +41,7 @@ async def modify_janhre(
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, JahnreGetModel])
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.jahnres, key_builder=default_search_key_builder)
 async def get_all(
     search_params: Annotated[JahnresSearchModel, Query()],
     service: Annotated[JahnreService, Depends(get_service)]

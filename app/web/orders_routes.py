@@ -1,5 +1,6 @@
 from fastapi import Depends, Body, APIRouter, status, Cookie, Path, Query, Form
 from typing import Annotated, Optional
+from fastapi_cache.decorator import cache
 
 from ..services.orders_service import OrdersService, get_service
 from ..utils.auth import auth_user, auth_admin
@@ -7,9 +8,11 @@ from ..models.users_models import UserGetModel
 from ..models.orders_models import OrderGetModel, OrderPostModel
 from ..models.search_and_pagination_models import OrderSearchModel
 from ..enums import OrderStatuses
+from ..utils.cache_key_builders import default_search_key_builder
+from ..settings import config
 
-router = APIRouter(prefix="/orders", tags=["📦 Orders"])
 
+router = APIRouter(prefix="/orders", tags=["📦 orders"])
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str])
@@ -33,6 +36,7 @@ async def change_order_status(
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, OrderGetModel], dependencies=[Depends(auth_admin)])
+@cache(expire=config.cache.ttl, namespace=config.cache.namespaces.orders, key_builder=default_search_key_builder)
 async def get_all(
     service: Annotated[OrdersService, Depends(get_service)],
     search_params: Annotated[OrderSearchModel, Query()]

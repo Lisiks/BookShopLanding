@@ -1,16 +1,19 @@
 from typing import Annotated
 from  fastapi import Depends, BackgroundTasks
 import asyncio
+from fastapi_cache import FastAPICache
 
 from ..utils import FileManager
 from ..models.books_models import BookGetModel, BookPostModel
 from ..models.search_and_pagination_models import BookSearchModel
 from ..database.repositories.book_repository import BooksRepository, get_repository
+from ..settings import config
 
 
 class BooksService:
-    def __init__(self, repository: BooksRepository):
+    def __init__(self, repository: BooksRepository, bg_tasks: BackgroundTasks):
         self.__repository = repository
+        self.__bg_tasks = bg_tasks
 
 
     async def create_book(self, book_params: BookPostModel) -> None:
@@ -21,6 +24,7 @@ class BooksService:
             )
 
             await self.__repository.create_book(book_params, image_web_path, demo_web_path)
+            self.__bg_tasks.add_task(FastAPICache.clear, config.cache.namespaces.books)
 
         except Exception:
             await asyncio.gather(
@@ -36,6 +40,8 @@ class BooksService:
             FileManager.delete_image_file(deleted_book_screen.image_file_path),
             FileManager.delete_demo_file(deleted_book_screen.demo_file_path)
         )
+        self.__bg_tasks.add_task(FastAPICache.clear, config.cache.namespaces.books)
+        self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.books}-{book_id}")
 
 
     async def modify_book(self, book_id: int, book_params: BookPostModel) -> None:
@@ -51,6 +57,9 @@ class BooksService:
                 FileManager.delete_image_file(updated_book_screen.image_file_path),
                 FileManager.delete_demo_file(updated_book_screen.demo_file_path)
             )
+
+            self.__bg_tasks.add_task(FastAPICache.clear, config.cache.namespaces.books)
+            self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.books}-{book_id}")
             
         except Exception:
             await asyncio.gather(
@@ -71,6 +80,7 @@ class BooksService:
 
 def get_service(
     repository: Annotated[BooksRepository, Depends(get_repository)],
+    bg_tasks: BackgroundTasks
 ) -> BooksService:
-    return BooksService(repository)
+    return BooksService(repository, bg_tasks)
         
