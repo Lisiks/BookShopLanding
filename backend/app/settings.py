@@ -27,9 +27,14 @@ class AppConfig(BaseSettings):
     reload: bool
     su_login: str
     su_password: str
+    allowed_origins: str
     name: str
     description: str
     version: str
+
+    @computed_field
+    def allowed_origins_list(self) -> list[str]:
+        return list(self.allowed_origins.split(","))
 
     model_config = SettingsConfigDict(
         case_sensitive=False,

@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache import FastAPICache
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from .exception_handlers import set_exception_handlers
 from ..utils import RedisManager
@@ -27,6 +28,13 @@ def create_app() -> FastAPI:
         title=config.app.name,
         description=config.app.description,
         version=config.app.version
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=config.app.allowed_origins_list,
+        allow_credentials=True,
+        allow_headers=["*"],
+        allow_methods=["*"]
     )
 
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
