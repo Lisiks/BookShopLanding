@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Annotated
 
-from ..models.books_models import BookShortModel
+from .books_models import BookShortModel
 
 
 class OrderItemsBaseModel(BaseModel):

@@ -35,7 +35,7 @@ services:
   
 
   backend_application:
-    build: ""
+    build: "backend/"
     container_name: backend_container
     environment:
       DB_USER: ${DB_USER}

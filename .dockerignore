@@ -1,7 +1,0 @@
-docs
-pgdata
-.env
-.gitignore
-docker-compose.yaml
-Dockerfile
-venv
