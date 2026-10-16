@@ -3,7 +3,7 @@ from fastapi import Depends, BackgroundTasks, Cookie
 
 
 from ..database.repositories.users_repository import get_repository, UsersRepository
-from ..models.users_models import UserPostModel, UserLoginModel
+from ..dto.users_dto import UserPostDTO, UserLoginModel
 from ..utils import RedisManager, PasswordManager
 
 from ..exceptions import LoginException, ForbidenException
@@ -17,7 +17,7 @@ class AccountsService:
         self.__bg_tasks = bg_tasks
 
 
-    async def create_account(self, user_params: UserPostModel) -> None:
+    async def create_account(self, user_params: UserPostDTO) -> None:
         await self.__repository.create_user(user_params, is_admin=False)
 
 

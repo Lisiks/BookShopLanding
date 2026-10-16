@@ -14,6 +14,8 @@ from ..settings import config
 
 
 
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None, None]:
     await RedisManager.init_client()

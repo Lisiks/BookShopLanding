@@ -4,8 +4,8 @@ from fastapi_cache.decorator import cache
 
 from ..services.authors_service import AuthorsService, get_service
 from ..utils.auth import auth_admin
-from ..models.authors_models import AuthorGetModel, AuthorPostModel
-from ..models.search_and_pagination_models import AuthorsSearchModel
+from ..dto.authors_dto import AuthorGetDTO, AuthorPostDTO
+from ..dto.search_dto import AuthorSearchDTO
 from ..settings import config
 
 from ..utils.cache_key_builders import default_search_key_builder
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/authors", tags=["✍️ authors"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def create_author(
-    author_params: Annotated[AuthorPostModel, Form(media_type="application/x-www-form-urlencoded")],
+    author_params: Annotated[AuthorPostDTO, Form(media_type="application/x-www-form-urlencoded")],
     service: Annotated[AuthorsService, Depends(get_service)]
 ) -> dict[str, str]:
     await service.create_author(author_params)
@@ -32,7 +32,7 @@ async def delete_author(
 
 @router.patch("/{author_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def modify_author(
-    author_params: Annotated[AuthorPostModel, Form(media_type="application/x-www-form-urlencoded")],
+    author_params: Annotated[AuthorPostDTO, Form(media_type="application/x-www-form-urlencoded")],
     author_id: Annotated[int, Path(gt=0)],
     service: Annotated[AuthorsService, Depends(get_service)]
 ) -> dict[str, str]:
@@ -40,10 +40,10 @@ async def modify_author(
     return {"msg": "modified"}
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, AuthorGetModel])
+@router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, AuthorGetDTO])
 @cache(expire=config.cache.ttl, namespace=config.cache.namespaces.authors, key_builder=default_search_key_builder)
 async def get_all(
-    search_params: Annotated[AuthorsSearchModel, Query()],
+    search_params: Annotated[AuthorSearchDTO, Query()],
     service: Annotated[AuthorsService, Depends(get_service)]
-) -> dict[int, AuthorGetModel]:
+) -> dict[int, AuthorGetDTO]:
     return await service.get_all(search_params)

@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Annotated
 
 
-class ShppingCartModel(BaseModel):
+class ShopingCartDTO(BaseModel):
     items: Annotated[list[int], Field(min_length=1, max_length=10, alias="items")]
 
     @field_validator("items", mode="after")

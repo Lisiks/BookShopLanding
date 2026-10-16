@@ -4,8 +4,8 @@ from fastapi_cache.decorator import cache
 
 from ..services.shop_service import ShopService, get_service
 from ..utils.auth import auth_admin
-from ..models.shops_models import ShopGetModel, ShopPostModel
-from ..models.search_and_pagination_models import ShopSearchModel
+from ..dto.shops_dto import ShopGetDTO, ShopPostDTO
+from ..dto.search_dto import ShopSearchDTO
 from ..settings import config
 
 from ..utils.cache_key_builders import default_search_key_builder
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/shops", tags=["🏨 shops"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def create_shop(
-    shop_params: Annotated[ShopPostModel, Form(media_type="application/x-www-form-urlencoded")],
+    shop_params: Annotated[ShopPostDTO, Form(media_type="application/x-www-form-urlencoded")],
     service: Annotated[ShopService, Depends(get_service)]
 ) -> dict[str, str]:
     await service.create_shop(shop_params)
@@ -33,7 +33,7 @@ async def delete_shop(
 
 @router.patch("/{shop_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def modify_shop(
-    shop_params: Annotated[ShopPostModel, Form(media_type="application/x-www-form-urlencoded")],
+    shop_params: Annotated[ShopPostDTO, Form(media_type="application/x-www-form-urlencoded")],
     shop_id: Annotated[int, Path(gt=0)],
     service: Annotated[ShopService, Depends(get_service)]
 ) -> dict[str, str]:
@@ -41,10 +41,10 @@ async def modify_shop(
     return {"msg": "modified"}
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, ShopGetModel])
+@router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, ShopGetDTO])
 @cache(expire=config.cache.ttl, namespace=config.cache.namespaces.shops, key_builder=default_search_key_builder)
 async def get_all(
-    search_params: Annotated[ShopSearchModel, Query()],
+    search_params: Annotated[ShopSearchDTO, Query()],
     service: Annotated[ShopService, Depends(get_service)]
-) -> dict[int, ShopGetModel]:
+) -> dict[int, ShopGetDTO]:
     return await service.get_all(search_params)

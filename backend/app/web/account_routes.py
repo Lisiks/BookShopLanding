@@ -8,9 +8,9 @@ from ..services.orders_service import OrdersService, get_service as get_order_se
 
 from ..utils.auth import auth_user
 
-from ..models.orders_models import OrderGetModel
-from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
-from ..models.search_and_pagination_models import OrderSearchModel
+from ..dto.orders_dto import OrderGetDTO
+from ..dto.users_dto import UserPostDTO, UserGetDTO, UserLoginModel
+from ..dto.search_dto import OrderSearchDTO
 from ..settings import config
 from ..exceptions import LoginException
 from ..utils.cache_key_builders import user_orders_key_builder
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/accounts", tags=["👥 accounts"])
 
 @router.post(path="/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str])
 async def create_account(
-    user_params: Annotated[UserPostModel, Form(media_type="application/x-www-form-urlencoded")],
+    user_params: Annotated[UserPostDTO, Form(media_type="application/x-www-form-urlencoded")],
     service: Annotated[AccountsService, Depends(get_account_service)]
 ) -> dict[str, str]:
     await service.create_account(user_params)
@@ -59,18 +59,18 @@ async def logout(
     return responce
 
 
-@router.get(path="/me", status_code=status.HTTP_200_OK, response_model=UserGetModel)
+@router.get(path="/me", status_code=status.HTTP_200_OK, response_model=UserGetDTO)
 async def me(
-    session_data: Annotated[UserGetModel, Depends(auth_user)]
-) -> UserGetModel:
+    session_data: Annotated[UserGetDTO, Depends(auth_user)]
+) -> UserGetDTO:
     return session_data
 
 
-@router.get(path="/me/orders", status_code=status.HTTP_200_OK, response_model=dict[int, OrderGetModel])
+@router.get(path="/me/orders", status_code=status.HTTP_200_OK, response_model=dict[int, OrderGetDTO])
 @cache(expire=config.cache.ttl, namespace=config.cache.namespaces.orders, key_builder=user_orders_key_builder)
 async def get_orders(
-    user_data: Annotated[UserGetModel, Depends(auth_user)],
+    user_data: Annotated[UserGetDTO, Depends(auth_user)],
     service: Annotated[OrdersService, Depends(get_order_service)],
-    search_params: Annotated[OrderSearchModel, Query()]
-) -> dict[int, OrderGetModel]:
+    search_params: Annotated[OrderSearchDTO, Query()]
+) -> dict[int, OrderGetDTO]:
     return await service.get_by_user_id(search_params, user_data.id)

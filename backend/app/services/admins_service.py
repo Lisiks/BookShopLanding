@@ -3,8 +3,8 @@ from fastapi import Depends, BackgroundTasks, Cookie
 
 
 from ..database.repositories.users_repository import get_repository, UsersRepository
-from ..models.users_models import UserPostModel, UserGetModel, UserLoginModel
-from ..models.search_and_pagination_models import UsersSearchModel
+from ..dto.users_dto import UserPostDTO, UserGetDTO, UserLoginModel
+from ..dto.search_dto import UserSearchDTO
 from ..exceptions import ForbidenException, LoginException
 from ..utils import RedisManager, PasswordManager
 
@@ -17,7 +17,7 @@ class AdminsService:
         self.__bg_tasks = bg_tasks
 
 
-    async def create_admin(self, admin_data: UserPostModel) -> None:
+    async def create_admin(self, admin_data: UserPostDTO) -> None:
         await self.__repository.create_user(admin_data, is_admin=True)
 
 
@@ -40,7 +40,7 @@ class AdminsService:
         await RedisManager.delete_session(session)
 
 
-    async def get_users(self, search_params: UsersSearchModel) -> dict[int, UserGetModel]:
+    async def get_users(self, search_params: UserSearchDTO) -> dict[int, UserGetDTO]:
         return await self.__repository.get_users(search_params)
 
 

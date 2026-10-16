@@ -4,8 +4,8 @@ import asyncio
 from fastapi_cache import FastAPICache
 
 from ..utils import FileManager
-from ..models.books_models import BookGetModel, BookPostModel
-from ..models.search_and_pagination_models import BookSearchModel
+from ..dto.books_dto import BookGetDTO, BookPostDTO
+from ..dto.search_dto import BookSearchDTO
 from ..database.repositories.book_repository import BooksRepository, get_repository
 from ..settings import config
 
@@ -16,7 +16,7 @@ class BooksService:
         self.__bg_tasks = bg_tasks
 
 
-    async def create_book(self, book_params: BookPostModel) -> None:
+    async def create_book(self, book_params: BookPostDTO) -> None:
         try:
             image_web_path, demo_web_path = await asyncio.gather(
                 FileManager.save_image_file(book_params.image_file),
@@ -44,7 +44,7 @@ class BooksService:
         self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.books}-{book_id}")
 
 
-    async def modify_book(self, book_id: int, book_params: BookPostModel) -> None:
+    async def modify_book(self, book_id: int, book_params: BookPostDTO) -> None:
         try:
             image_web_path, demo_web_path = await asyncio.gather(
                 FileManager.save_image_file(book_params.image_file),
@@ -68,13 +68,13 @@ class BooksService:
             )
             raise
 
-    async def get_by_list(self, book_ids_list: list[int]) -> dict[int, BookGetModel]:
+    async def get_by_list(self, book_ids_list: list[int]) -> dict[int, BookGetDTO]:
         return await self.__repository.get_by_list(book_ids_list)
 
-    async def get_by_id(self, book_id: int) -> BookGetModel:
+    async def get_by_id(self, book_id: int) -> BookGetDTO:
         return await self.__repository.get_by_id(book_id)
 
-    async def get_all(self, search_params: BookSearchModel) -> dict[int, BookGetModel]:
+    async def get_all(self, search_params: BookSearchDTO) -> dict[int, BookGetDTO]:
         return await self.__repository.get_all(search_params)
 
 

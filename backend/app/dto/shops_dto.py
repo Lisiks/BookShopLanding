@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import Annotated
 
 
-class ShopBaseModel(BaseModel):
+class ShopBaseDTO(BaseModel):
     phone: Annotated[str, Field(pattern="^\\+\\d{1,3}\\(\\d{3}\\)\\d{3}-\\d{2}-\\d{2}$")]
 
     town: Annotated[str, Field(max_length=100)]
@@ -12,9 +12,9 @@ class ShopBaseModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ShopPostModel(ShopBaseModel):
+class ShopPostDTO(ShopBaseDTO):
     ...
 
 
-class ShopGetModel(ShopBaseModel):
+class ShopGetDTO(ShopBaseDTO):
     id: int

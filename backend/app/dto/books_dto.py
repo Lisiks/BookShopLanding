@@ -3,20 +3,20 @@ from typing import Annotated, Optional
 from fastapi import UploadFile
 from datetime import datetime, timezone
 
-from .authors_models import AuthorGetModel
-from .jahnres_models import JahnreGetModel
+from .authors_dto import AuthorGetDTO
+from .genres_dto import GenreGetDTO
 
 
 IMAGE_FILE_CORRECT_TYPES = {"image/png", "image/jpeg", "image/jpg", "image/bmp", "image/webp"}
 DEMO_FILE_CORRECT_TYPES = {"application/pdf"}
 
 
-class BookBaseModel(BaseModel):
+class BookBaseDTO(BaseModel):
 
     title: Annotated[str, Field(max_length=200)]
     description: Annotated[Optional[str], Field(default=None)]
     author_id: Annotated[Optional[int], Field(gt=0, alias="authorId", default=None)]
-    jahnre_id: Annotated[Optional[int], Field(gt=0, alias="jahnreId", default=None)]
+    genre_id: Annotated[Optional[int], Field(gt=0, alias="jahnreId", default=None)]
     page_count: Annotated[int, Field(gt=0, alias="pageCount")]
     write_year: Annotated[int, Field(alias="writeYear")]
     price: Annotated[float, Field(gt=0.0, lt=100000000)]
@@ -30,7 +30,7 @@ class BookBaseModel(BaseModel):
     )
 
 
-class BookPostModel(BookBaseModel):
+class BookPostDTO(BookBaseDTO):
 
     image_file: Annotated[UploadFile, Field(alias="imageFile", exclude=True)]
     demo_file: Annotated[UploadFile, Field(alias="demoFile", exclude=True)]
@@ -60,15 +60,15 @@ class BookPostModel(BookBaseModel):
 
 
 
-class BookGetModel(BookBaseModel):
+class BookGetDTO(BookBaseDTO):
     id: int
     image_file_path: Annotated[str, Field(alias="imageFilePath")]
     demo_file_path: Annotated[str, Field(alias="demoFilePath", default=None)]
-    author: AuthorGetModel
-    jahnre: JahnreGetModel
+    author: AuthorGetDTO
+    genre: GenreGetDTO
 
 
-class BookShortModel(BaseModel):
+class BookShortDTO(BaseModel):
     id: int
     title: str
 

@@ -3,9 +3,9 @@ from sqlalchemy import select
 from fastapi import Depends
 from typing import Annotated
 
-from ...models.users_models import UserPostModel, UserGetModel
-from ...models.search_and_pagination_models import UsersSearchModel
-from ..shemas import Users
+from ...dto.users_dto import UserPostDTO, UserGetDTO
+from ...dto.search_dto import UserSearchDTO
+from ..models import UsersORM
 from ...core.postgresql import get_session, session_fabric
 
 
@@ -17,27 +17,27 @@ class UsersRepository:
         self.__session = session
 
 
-    async def create_user(self, user_params: UserPostModel, is_admin: bool) -> None:
-        new_user = Users(**user_params.model_dump(by_alias=False), is_admin=is_admin)
+    async def create_user(self, user_params: UserPostDTO, is_admin: bool) -> None:
+        new_user = UsersORM(**user_params.model_dump(by_alias=False), is_admin=is_admin)
         self.__session.add(new_user)
         await self.__session.commit()
 
 
-    async def get_users(self, search_params: UsersSearchModel) -> dict[int, UserGetModel]:
-        stmt = select(Users).where(Users.is_admin == search_params.is_admin)
+    async def get_users(self, search_params: UserSearchDTO) -> dict[int, UserGetDTO]:
+        stmt = select(UsersORM).where(UsersORM.is_admin == search_params.is_admin)
 
         if search_params.username is not None:
-            stmt = stmt.where(Users.username.ilike(f"%{search_params.username}%"))
+            stmt = stmt.where(UsersORM.username.ilike(f"%{search_params.username}%"))
 
-        stmt = stmt.order_by(Users.id).limit(search_params.limit).offset(search_params.offset)
+        stmt = stmt.order_by(UsersORM.id).limit(search_params.limit).offset(search_params.offset)
 
         users = await self.__session.scalars(stmt)
 
-        return {user.id: UserGetModel.model_validate(user, by_alias=False, by_name=True) for user in users.all()}
+        return {user.id: UserGetDTO.model_validate(user, by_alias=False, by_name=True) for user in users.all()}
 
 
     async def block_user(self, user_id: int) -> None:
-        stmt = select(Users).where(Users.id == user_id)
+        stmt = select(UsersORM).where(UsersORM.id == user_id)
         query_result = await self.__session.scalars(stmt)
         user = query_result.one()
 
@@ -46,7 +46,7 @@ class UsersRepository:
 
 
     async def unblock_user(self, user_id: int) -> None:
-        stmt = select(Users).where(Users.id == user_id)
+        stmt = select(UsersORM).where(UsersORM.id == user_id)
         query_result = await self.__session.scalars(stmt)
         user = query_result.one()
 
@@ -54,10 +54,10 @@ class UsersRepository:
         await self.__session.commit()
     
     
-    async def get_by_name(self, username: str) -> UserGetModel | None:
-        stmt = select(Users).where(Users.username == username)
+    async def get_by_name(self, username: str) -> UserGetDTO | None:
+        stmt = select(UsersORM).where(UsersORM.username == username)
         user = await self.__session.scalar(stmt)
-        return UserGetModel.model_validate(user, by_alias=False, by_name=True) if user is not None else None
+        return UserGetDTO.model_validate(user, by_alias=False, by_name=True) if user is not None else None
 
 
 def get_repository(session: Annotated[AsyncSession, Depends(get_session)]) -> UsersRepository:
@@ -65,17 +65,17 @@ def get_repository(session: Annotated[AsyncSession, Depends(get_session)]) -> Us
 
 
 async def create_super_user() -> None:
-    super_user_model = UserPostModel.model_validate({
+    super_user_model = UserPostDTO.model_validate({
         "username": config.app.su_login,
         "plainPassword": config.app.su_password
     })
 
     async with session_fabric() as session:
-        stmt = select(Users).where(Users.username == config.app.su_login)
+        stmt = select(UsersORM).where(UsersORM.username == config.app.su_login)
         super_user = await session.scalar(stmt)
 
         if super_user is None:
-            new_user = Users(**super_user_model.model_dump(by_alias=False), is_blocked=False, is_admin=True)
+            new_user = UsersORM(**super_user_model.model_dump(by_alias=False), is_blocked=False, is_admin=True)
             session.add(new_user)
 
         else:

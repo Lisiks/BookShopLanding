@@ -2,11 +2,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlalchemy import select
 from fastapi import Depends
-from typing import Annotated, Optional
+from typing import Annotated
 
-from ...models.books_models import BookPostModel, BookGetModel
-from ...models.search_and_pagination_models import BookSearchModel
-from ..shemas import Books
+from ...dto.books_dto import BookPostDTO, BookGetDTO
+from ...dto.search_dto import BookSearchDTO
+from ..models import BooksORM
 from ...core.postgresql import get_session
 
 
@@ -15,22 +15,22 @@ class BooksRepository:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def create_book(self, book_params: BookPostModel, image_src: str, demo_src: str) -> None:
-        new_book = Books(**book_params.model_dump(by_alias=False), image_file_path=image_src, demo_file_path=demo_src)
+    async def create_book(self, book_params: BookPostDTO, image_src: str, demo_src: str) -> None:
+        new_book = BooksORM(**book_params.model_dump(by_alias=False), image_file_path=image_src, demo_file_path=demo_src)
         self.__session.add(new_book)
         await self.__session.commit()
 
 
-    async def delete_book(self, book_id: int) -> BookGetModel:
-        stmt = select(Books).options(
-            joinedload(Books.author),
-            joinedload(Books.jahnre)
-        ).where(Books.id == book_id)
+    async def delete_book(self, book_id: int) -> BookGetDTO:
+        stmt = select(BooksORM).options(
+            joinedload(BooksORM.author),
+            joinedload(BooksORM.genre)
+        ).where(BooksORM.id == book_id)
 
         query_result = await self.__session.scalars(stmt)
         book = query_result.one()
 
-        old_book_screen = BookGetModel.model_validate(book, by_alias=False, by_name=True)
+        old_book_screen = BookGetDTO.model_validate(book, by_alias=False, by_name=True)
 
         await self.__session.delete(book)
         await self.__session.commit()
@@ -38,16 +38,16 @@ class BooksRepository:
         return old_book_screen
 
 
-    async def modify_book(self, book_id: int, book_params: BookPostModel, image_src: str, demo_src: str) -> BookGetModel:
-        stmt = select(Books).options(
-            joinedload(Books.author),
-            joinedload(Books.jahnre)
-        ).where(Books.id == book_id)
+    async def modify_book(self, book_id: int, book_params: BookPostDTO, image_src: str, demo_src: str) -> BookGetDTO:
+        stmt = select(BooksORM).options(
+            joinedload(BooksORM.author),
+            joinedload(BooksORM.genre)
+        ).where(BooksORM.id == book_id)
 
         query_result = await self.__session.scalars(stmt)
         book = query_result.one()
 
-        old_book_screen = BookGetModel.model_validate(book, by_alias=False, by_name=True)
+        old_book_screen = BookGetDTO.model_validate(book, by_alias=False, by_name=True)
 
         for field, value in book_params.model_dump(by_alias=False).items():
             setattr(book, field, value)
@@ -60,45 +60,45 @@ class BooksRepository:
         return old_book_screen
 
 
-    async def get_by_id(self, book_id: int) -> BookGetModel:
-        stmt = select(Books).options(
-            joinedload(Books.author),
-            joinedload(Books.jahnre)
-        ).where(Books.id == book_id)
+    async def get_by_id(self, book_id: int) -> BookGetDTO:
+        stmt = select(BooksORM).options(
+            joinedload(BooksORM.author),
+            joinedload(BooksORM.genre)
+        ).where(BooksORM.id == book_id)
 
         query_result = await self.__session.scalars(stmt)
         book = query_result.one()
 
-        return BookGetModel.model_validate(book, by_alias=False, by_name=True)
+        return BookGetDTO.model_validate(book, by_alias=False, by_name=True)
 
-    async def get_by_list(self, book_ids_list: list[int]) -> dict[int, BookGetModel]:
-        stmt = select(Books).options(joinedload(Books.author), joinedload(Books.jahnre)).where(Books.id.in_(book_ids_list))
+    async def get_by_list(self, book_ids_list: list[int]) -> dict[int, BookGetDTO]:
+        stmt = select(BooksORM).options(joinedload(BooksORM.author), joinedload(BooksORM.genre)).where(BooksORM.id.in_(book_ids_list))
         books = await self.__session.scalars(stmt)
-        return {book.id : BookGetModel.model_validate(book, by_alias=False, by_name=True) for book in books.all()}
+        return {book.id : BookGetDTO.model_validate(book, by_alias=False, by_name=True) for book in books.all()}
 
 
-    async def get_all(self, search_params: BookSearchModel) -> dict[int, BookGetModel]:
-        stmt = select(Books).options(joinedload(Books.author), joinedload(Books.jahnre))
+    async def get_all(self, search_params: BookSearchDTO) -> dict[int, BookGetDTO]:
+        stmt = select(BooksORM).options(joinedload(BooksORM.author), joinedload(BooksORM.genre))
 
         if search_params.title is not None:
-            stmt = stmt.where(Books.title.ilike(f"%{search_params.title }%"))
+            stmt = stmt.where(BooksORM.title.ilike(f"%{search_params.title }%"))
 
         if search_params.max_price is not None:
-            stmt = stmt.where(Books.price <= search_params.max_price)
+            stmt = stmt.where(BooksORM.price <= search_params.max_price)
 
         if search_params.min_price is not None:
-            stmt = stmt.where(Books.price >= search_params.min_price)
+            stmt = stmt.where(BooksORM.price >= search_params.min_price)
 
         if search_params.author_id is not None:
-            stmt = stmt.where(Books.author_id == search_params.author_id)
+            stmt = stmt.where(BooksORM.author_id == search_params.author_id)
 
         if search_params.jahnre_id is not None:
-            stmt = stmt.where(Books.author_id == search_params.jahnre_id)
+            stmt = stmt.where(BooksORM.author_id == search_params.jahnre_id)
 
-        stmt = stmt.order_by(Books.id).limit(search_params.limit).offset(search_params.offset)
+        stmt = stmt.order_by(BooksORM.id).limit(search_params.limit).offset(search_params.offset)
 
         books = await self.__session.scalars(stmt)
-        return {book.id: BookGetModel.model_validate(book, by_alias=False, by_name=True) for book in books.all()}
+        return {book.id: BookGetDTO.model_validate(book, by_alias=False, by_name=True) for book in books.all()}
 
 
 def get_repository(

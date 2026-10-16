@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi_cache import FastAPICache
 
 from ..database.repositories.comments_repository import CommentsRepository, get_repository
-from ..models.comments_models import CommentGetModel
+from ..dto.comments_dto import CommentGetDTO
 from ..settings import config
 
 
@@ -22,10 +22,10 @@ class CommentsService:
         self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.comments}-{book_id}")
         self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.comments}-{book_id}-{user_id}")
 
-    async def get_by_id(self, book_id: int, user_id: int) -> CommentGetModel:
+    async def get_by_id(self, book_id: int, user_id: int) -> CommentGetDTO:
         return await self.__repository.get_by_id(book_id, user_id)
 
-    async def get_all(self, book_id) -> dict[int, CommentGetModel]:
+    async def get_all(self, book_id) -> dict[int, CommentGetDTO]:
         return await self.__repository.get_all(book_id)
 
 

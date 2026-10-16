@@ -2,7 +2,7 @@ import redis
 from uuid import uuid4
 
 from ..settings import config
-from ..models.users_models import UserGetModel
+from ..dto.users_dto import UserGetDTO
 
 class RedisManager:
     __client: redis.asyncio.Redis
@@ -12,7 +12,8 @@ class RedisManager:
         cls.__client = await redis.asyncio.Redis(
             host=config.redis.host,
             port=config.redis.port,
-            db=config.redis.db
+            db=config.redis.db,
+            password=config.redis.password
         )
 
     @classmethod
@@ -28,7 +29,7 @@ class RedisManager:
 
 
     @classmethod
-    async def create_session(cls, user_params: UserGetModel) -> str:
+    async def create_session(cls, user_params: UserGetDTO) -> str:
         session = str(uuid4())
         
         await cls.__client.hset(
@@ -42,9 +43,9 @@ class RedisManager:
 
 
     @classmethod
-    async def read_session(cls, session: str) -> UserGetModel | None:
+    async def read_session(cls, session: str) -> UserGetDTO | None:
         user_json_string = await cls.__client.hget(config.session.hash_key, session)
-        return UserGetModel.model_validate_json(user_json_string.decode()) if user_json_string is not None else None
+        return UserGetDTO.model_validate_json(user_json_string.decode()) if user_json_string is not None else None
 
 
     @classmethod
@@ -56,6 +57,6 @@ class RedisManager:
     async def delete_sessions_by_id(self, user_id: int) -> None:
         sessions_dict = await self.__client.hgetall(config.session.hash_key)
 
-        user_sessions = [session for session, data in sessions_dict.items() if UserGetModel.model_validate_json(data.decode()).id == user_id]
+        user_sessions = [session for session, data in sessions_dict.items() if UserGetDTO.model_validate_json(data.decode()).id == user_id]
 
         await self.__client.hdel(config.session.hash_key, *user_sessions)

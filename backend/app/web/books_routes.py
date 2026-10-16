@@ -4,12 +4,12 @@ from fastapi_cache.decorator import cache
 
 from ..services.books_service import BooksService, get_service as get_book_service
 from ..utils.auth import auth_admin, auth_user
-from ..models.books_models import BookGetModel, BookPostModel
-from ..models.search_and_pagination_models import BookSearchModel
-from ..models.shoppig_cart_models import ShppingCartModel
+from ..dto.books_dto import BookGetDTO, BookPostDTO
+from ..dto.search_dto import BookSearchDTO
+from ..dto.shoping_cart_dto import ShopingCartDTO
 from ..services.comments_service import CommentsService, get_service as get_comment_service
-from ..models.comments_models import CommentGetModel
-from ..models.users_models import UserGetModel
+from ..dto.comments_dto import CommentGetDTO
+from ..dto.users_dto import UserGetDTO
 from ..settings import config
 
 from ..utils.cache_key_builders import (default_search_key_builder, books_page_key_builder, 
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/books", tags=["📚 books"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def create_book(
-    book_params: Annotated[BookPostModel, Form(media_type="multipart/form-data")],
+    book_params: Annotated[BookPostDTO, Form(media_type="multipart/form-data")],
     service: Annotated[BooksService, Depends(get_book_service)]
 ) -> dict[str, str]:
     await service.create_book(book_params)
@@ -38,7 +38,7 @@ async def delete_book(
 
 @router.patch("/{book_id}", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str], dependencies=[Depends(auth_admin)])
 async def modify_book(
-    book_params: Annotated[BookPostModel, Form(media_type="multipart/form-data")],
+    book_params: Annotated[BookPostDTO, Form(media_type="multipart/form-data")],
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[BooksService, Depends(get_book_service)]
 ) -> dict[str, str]:
@@ -46,36 +46,36 @@ async def modify_book(
     return {"msg": "modified"}
 
 
-@router.get("/{book_id}", status_code=status.HTTP_200_OK, response_model=BookGetModel)
+@router.get("/{book_id}", status_code=status.HTTP_200_OK, response_model=BookGetDTO)
 @cache(expire=config.cache.ttl, namespace=config.cache.namespaces.books, key_builder=books_page_key_builder)
 async def get_by_id(
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[BooksService, Depends(get_book_service)]
-) -> BookGetModel:
+) -> BookGetDTO:
     return await service.get_by_id(book_id)
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, BookGetModel])
+@router.get("/", status_code=status.HTTP_200_OK, response_model=dict[int, BookGetDTO])
 @cache(expire=config.cache.ttl, namespace=config.cache.namespaces.books, key_builder=default_search_key_builder)
 async def get_all(
-    search_params: Annotated[BookSearchModel, Query()],
+    search_params: Annotated[BookSearchDTO, Query()],
     service: Annotated[BooksService, Depends(get_book_service)]
-) -> dict[int, BookGetModel]:
+) -> dict[int, BookGetDTO]:
     return await service.get_all(search_params)
 
 
-@router.post("/list", status_code=status.HTTP_200_OK, response_model=dict[int, BookGetModel], dependencies=[Depends(auth_user)])
+@router.post("/list", status_code=status.HTTP_200_OK, response_model=dict[int, BookGetDTO])
 async def get_by_list(
-    shoping_cart: Annotated[ShppingCartModel, Body()],
+    shoping_cart: Annotated[ShopingCartDTO, Body()],
     service: Annotated[BooksService, Depends(get_book_service)]
-) -> dict[int, BookGetModel]:
+) -> dict[int, BookGetDTO]:
     return await service.get_by_list(shoping_cart.items)
 
 
 @router.post("/{book_id}/comments", status_code=status.HTTP_201_CREATED, response_model=dict[str, str])
 async def create_comment(
     book_id: Annotated[int, Path(gt=0)],
-    user_data: Annotated[UserGetModel, Depends(auth_user)],
+    user_data: Annotated[UserGetDTO, Depends(auth_user)],
     text: Annotated[str, Form(media_type="application/x-www-form-urlencoded")],
     service: Annotated[CommentsService, Depends(get_comment_service)]
 ) -> dict[str, str]:
@@ -86,27 +86,27 @@ async def create_comment(
 @router.delete("/{book_id}/comments", status_code=status.HTTP_202_ACCEPTED, response_model=dict[str, str])
 async def delete_comment(
     book_id: Annotated[int, Path(gt=0)],
-    user_data: Annotated[UserGetModel, Depends(auth_user)],
+    user_data: Annotated[UserGetDTO, Depends(auth_user)],
     service: Annotated[CommentsService, Depends(get_comment_service)]
 ) -> dict[str, str]:
     await service.delete_comment(book_id, user_data.id)
     return {"msg": "deleted"}
 
 
-@router.get("/{book_id}/comments/me", status_code=status.HTTP_200_OK, response_model=CommentGetModel)
+@router.get("/{book_id}/comments/me", status_code=status.HTTP_200_OK, response_model=CommentGetDTO)
 @cache(expire=config.cache.ttl, namespace=config.cache.namespaces.comments, key_builder=user_comment_key_builder)
 async def get_comment_me(
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[CommentsService, Depends(get_comment_service)],
-    user_data: Annotated[UserGetModel, Depends(auth_user)]
-) -> CommentGetModel:
+    user_data: Annotated[UserGetDTO, Depends(auth_user)]
+) -> CommentGetDTO:
     return await service.get_by_id(book_id, user_data.id)
 
 
-@router.get("/{book_id}/comments", status_code=status.HTTP_200_OK, response_model=dict[int, CommentGetModel])
+@router.get("/{book_id}/comments", status_code=status.HTTP_200_OK, response_model=dict[int, CommentGetDTO])
 @cache(expire=config.cache.ttl, namespace=config.cache.namespaces.comments, key_builder=comments_key_builder)
 async def get_all_comments(
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[CommentsService, Depends(get_comment_service)]
-) -> dict[str, CommentGetModel | list[CommentGetModel]]:
+) -> dict[str, CommentGetDTO | list[CommentGetDTO]]:
     return await service.get_all(book_id)

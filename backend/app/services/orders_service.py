@@ -4,8 +4,8 @@ from fastapi_cache import FastAPICache
 
 
 from ..enums import OrderStatuses
-from ..models.orders_models import OrderGetModel, OrderPostModel
-from ..models.search_and_pagination_models import OrderSearchModel
+from ..dto.orders_dto import OrderGetDTO, OrderPostDTO
+from ..dto.search_dto import OrderSearchDTO
 from ..database.repositories.orders_repository import OrdersRepository, get_repository
 from ..settings import config
 
@@ -15,7 +15,7 @@ class OrdersService:
         self.__repository = repository
         self.__bg_tasks = bg_tasks
 
-    async def create_order(self, order_params: OrderPostModel, user_id: int) -> None:
+    async def create_order(self, order_params: OrderPostDTO, user_id: int) -> None:
         await self.__repository.create_order(order_params, user_id)
         self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.orders}")
         self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.orders}-{user_id}")
@@ -25,10 +25,10 @@ class OrdersService:
         self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.orders}")
         self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.orders}-{owner_user_id}")
 
-    async def get_all(self, search_params: OrderSearchModel) -> dict[int, OrderGetModel]:
+    async def get_all(self, search_params: OrderSearchDTO) -> dict[int, OrderGetDTO]:
         return await self.__repository.get_all(search_params)
 
-    async def get_by_user_id(self, search_params: OrderSearchModel, user_id: int) -> dict[int, OrderGetModel]:
+    async def get_by_user_id(self, search_params: OrderSearchDTO, user_id: int) -> dict[int, OrderGetDTO]:
         return await self.__repository.get_all(search_params, user_id)
 
 

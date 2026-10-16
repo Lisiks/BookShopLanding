@@ -2,8 +2,8 @@ from typing import Annotated
 from fastapi import Depends, BackgroundTasks
 from fastapi_cache import FastAPICache
 
-from ..models.authors_models import AuthorGetModel, AuthorPostModel
-from ..models.search_and_pagination_models import AuthorsSearchModel
+from ..dto.authors_dto import AuthorGetDTO, AuthorPostDTO
+from ..dto.search_dto import AuthorSearchDTO
 from ..database.repositories.authors_repository import AuthorsRepository, get_repository
 from ..settings import config
 
@@ -14,7 +14,7 @@ class AuthorsService:
         self.__bg_tasks = bg_tasks
 
 
-    async def create_author(self, author_params: AuthorPostModel) -> None:
+    async def create_author(self, author_params: AuthorPostDTO) -> None:
         await self.__repository.create_author(author_params)
         self.__bg_tasks.add_task(FastAPICache.clear, config.cache.namespaces.authors)
 
@@ -24,12 +24,12 @@ class AuthorsService:
         self.__bg_tasks.add_task(FastAPICache.clear, config.cache.namespaces.authors)
 
 
-    async def modify_author(self, author_id: int, author_params: AuthorPostModel) -> None:
+    async def modify_author(self, author_id: int, author_params: AuthorPostDTO) -> None:
         await self.__repository.modify_author(author_id, author_params)
         self.__bg_tasks.add_task(FastAPICache.clear, config.cache.namespaces.authors)
 
 
-    async def get_all(self, search_params: AuthorsSearchModel) -> dict[int, AuthorGetModel]:
+    async def get_all(self, search_params: AuthorSearchDTO) -> dict[int, AuthorGetDTO]:
         return await self.__repository.get_all(search_params)
 
 

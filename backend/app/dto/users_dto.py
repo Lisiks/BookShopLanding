@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 from ..utils import PasswordManager
 
 
-class UserBaseModel(BaseModel):
+class UserBaseDTO(BaseModel):
     username: Annotated[str, Field(max_length=100, min_length=6)]
 
     model_config = ConfigDict(
@@ -13,7 +13,7 @@ class UserBaseModel(BaseModel):
     )
 
 
-class UserPostModel(UserBaseModel):
+class UserPostDTO(UserBaseDTO):
     plain_password: Annotated[str, Field(max_length=72, min_length=6, alias="plainPassword", exclude=True)]
 
     @computed_field(alias="passwordHash")
@@ -21,12 +21,12 @@ class UserPostModel(UserBaseModel):
         return PasswordManager.hash_password(self.plain_password)
 
 
-class UserLoginModel(UserBaseModel):
+class UserLoginModel(UserBaseDTO):
     plain_password: Annotated[str, Field(max_length=72, alias="plainPassword", exclude=True)]
 
 
 
-class UserGetModel(UserBaseModel):
+class UserGetDTO(UserBaseDTO):
     id: int
     is_admin: Annotated[bool, Field(alias="isAdmin")]
     is_blocked: Annotated[bool, Field(alias="isBlocked")]

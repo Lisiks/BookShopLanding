@@ -46,11 +46,14 @@ def set_exception_handlers(app: FastAPI) -> None:
         if "duplicate key value violates unique constraint \"users_username_key\"" in exception_description:
             return JSONResponse(content={"msg": "User with this username already exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
-        if "duplicate key value violates unique constraint \"jahnres_name_key\"" in exception_description:
-            return JSONResponse(content={"msg": "Jahnre with this name already exists in database"}, status_code=status.HTTP_409_CONFLICT)
+        if "duplicate key value violates unique constraint \"genres_name_key\"" in exception_description:
+            return JSONResponse(content={"msg": "Gehnre with this name already exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
         if "duplicate key value violates unique constraint \"shops_phone_key\"" in exception_description:
             return JSONResponse(content={"msg": "Shop with this phone already exists in database"}, status_code=status.HTTP_409_CONFLICT)
+
+        if "update or delete on table \"shops\" violates foreign key constraint \"shops_id_fk\" on table \"orders\"" in exception_description:
+            return JSONResponse(content={"msg": "Order with this shop already exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
         if "duplicate key value violates unique constraint \"address_uq\"" in exception_description:
             return JSONResponse(content={"msg": "Shop with this address already exists in database"}, status_code=status.HTTP_409_CONFLICT)
@@ -58,8 +61,8 @@ def set_exception_handlers(app: FastAPI) -> None:
         if "insert or update on table \"books\" violates foreign key constraint \"authors_id_fk\"" in exception_description:
             return JSONResponse(content={"msg": "Author with this id doesnt exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
-        if "insert or update on table \"books\" violates foreign key constraint \"jahnres_id_fk\"" in exception_description:
-            return JSONResponse(content={"msg": "Jahnre with this id doesnt exists in database"}, status_code=status.HTTP_409_CONFLICT)
+        if "insert or update on table \"books\" violates foreign key constraint \"genres_id_fk\"" in exception_description:
+            return JSONResponse(content={"msg": "Genre with this id doesnt exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
         if "duplicate key value violates unique constraint \"books_isbn_key\"" in exception_description:
             return JSONResponse(content={"msg": "Book with thid ISBN already exists in database"}, status_code=status.HTTP_409_CONFLICT)
@@ -73,7 +76,7 @@ def set_exception_handlers(app: FastAPI) -> None:
         if "update or delete on table \"authors\" violates foreign key constraint \"authors_id_fk\" on table \"books\"" in exception_description:
             return JSONResponse(content={"msg": "Book with this author exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
-        if "update or delete on table \"jahnres\" violates foreign key constraint \"jahnres_id_fk\" on table \"books\"" in exception_description:
+        if "update or delete on table \"genres\" violates foreign key constraint \"genres_id_fk\" on table \"books\"" in exception_description:
             return JSONResponse(content={"msg": "Book with this jahnre exists in database"}, status_code=status.HTTP_409_CONFLICT)
 
         if "insert or update on table \"orders\" violates foreign key constraint \"shops_id_fk\"" in exception_description:

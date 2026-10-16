@@ -5,9 +5,9 @@ from sqlalchemy.exc import NoResultFound
 from fastapi import Depends
 from typing import Annotated, Optional
 
-from ...models.orders_models import OrderPostModel, OrderGetModel
-from ...models.search_and_pagination_models import OrderSearchModel
-from ..shemas import Orders, OrdersItems, Books
+from ...dto.orders_dto import OrderPostDTO, OrderGetDTO
+from ...dto.search_dto import OrderSearchDTO
+from ..models import OrdersORM, BooksORM, OrdersItemsORM
 from ...core.postgresql import get_session
 from ...enums import OrderStatuses
 
@@ -19,9 +19,9 @@ class OrdersRepository:
         self.__session = session
 
 
-    async def create_order(self, order_params: OrderPostModel, user_id: int) -> None:
+    async def create_order(self, order_params: OrderPostDTO, user_id: int) -> None:
         stmt = union_all(
-            *[select(Books.id.label("book_id"), literal(item.count).label("count"), Books.price.label("price")).where(Books.id == item.book_id)
+            *[select(BooksORM.id.label("book_id"), literal(item.count).label("count"), BooksORM.price.label("price")).where(BooksORM.id == item.book_id)
             for item in order_params.items]
         )
 
@@ -32,11 +32,11 @@ class OrdersRepository:
             raise NoResultFound()
 
     
-        order = Orders(
+        order = OrdersORM(
             user_id=user_id,
             status=OrderStatuses.InAssembly,
             shop_id=order_params.shop_id,
-            items=[OrdersItems(**item) for item in item_data]
+            items=[OrdersItemsORM(**item) for item in item_data]
         )
 
         self.__session.add(order)
@@ -44,7 +44,7 @@ class OrdersRepository:
 
 
     async def change_order_status(self, order_id: int, new_status: OrderStatuses) -> int:
-        stmt = select(Orders).where(Orders.id == order_id)
+        stmt = select(OrdersORM).where(OrdersORM.id == order_id)
         query_result = await self.__session.scalars(stmt)
         order = query_result.one()
 
@@ -54,26 +54,26 @@ class OrdersRepository:
         return order.user_id
 
 
-    async def get_all(self, search_params: OrderSearchModel, user_id: Optional[int] = None) -> dict[int, OrderGetModel]:
-        stmt = select(Orders).options(
-            joinedload(Orders.shop),
-            joinedload(Orders.user),
-            selectinload(Orders.items).joinedload(OrdersItems.book)
+    async def get_all(self, search_params: OrderSearchDTO, user_id: Optional[int] = None) -> dict[int, OrderGetDTO]:
+        stmt = select(OrdersORM).options(
+            joinedload(OrdersORM.shop),
+            joinedload(OrdersORM.user),
+            selectinload(OrdersORM.items).joinedload(OrdersItemsORM.book)
         )
 
         if search_params.status is not None:
-            stmt = stmt.where(Orders.status == search_params.status)
+            stmt = stmt.where(OrdersORM.status == search_params.status)
 
         if search_params.shop_id is not None:
-            stmt = stmt.where(Orders.shop_id == search_params.shop_id)
+            stmt = stmt.where(OrdersORM.shop_id == search_params.shop_id)
 
         if user_id is not None:
-            stmt = stmt.where(Orders.user_id == user_id)
+            stmt = stmt.where(OrdersORM.user_id == user_id)
 
-        stmt = stmt.order_by(desc(Orders.datetime)).limit(search_params.limit).offset(search_params.offset)
+        stmt = stmt.order_by(desc(OrdersORM.datetime)).limit(search_params.limit).offset(search_params.offset)
 
         orders = await self.__session.scalars(stmt)
-        return {order.id: OrderGetModel.model_validate(order, by_alias=False, by_name=True) for order in orders.all()}
+        return {order.id: OrderGetDTO.model_validate(order, by_alias=False, by_name=True) for order in orders.all()}
 
 def get_repository(
     session: Annotated[AsyncSession, Depends(get_session)]

@@ -3,9 +3,9 @@ from sqlalchemy import select, or_, literal
 from fastapi import Depends
 from typing import Annotated
 
-from ...models.authors_models import AuthorGetModel, AuthorPostModel
-from ...models.search_and_pagination_models import AuthorsSearchModel
-from ..shemas import Authors
+from ...dto.authors_dto import AuthorGetDTO, AuthorPostDTO
+from ...dto.search_dto import AuthorSearchDTO
+from ..models import AuthorsORM
 from ...core.postgresql import get_session
 
 
@@ -14,14 +14,14 @@ class AuthorsRepository:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def create_author(self, author_params: AuthorPostModel) -> None:
-        new_author = Authors(**author_params.model_dump())
+    async def create_author(self, author_params: AuthorPostDTO) -> None:
+        new_author = AuthorsORM(**author_params.model_dump())
         self.__session.add(new_author)
         await self.__session.commit()
 
 
     async def delete_author(self, author_id: int) -> None:
-        stmt = select(Authors).where(Authors.id == author_id)
+        stmt = select(AuthorsORM).where(AuthorsORM.id == author_id)
         query_result = await self.__session.scalars(stmt)
         author = query_result.one()
 
@@ -29,8 +29,8 @@ class AuthorsRepository:
         await self.__session.commit()
 
 
-    async def modify_author(self, author_id: int, author_params: AuthorPostModel) -> None:
-        stmt = select(Authors).where(Authors.id == author_id)
+    async def modify_author(self, author_id: int, author_params: AuthorPostDTO) -> None:
+        stmt = select(AuthorsORM).where(AuthorsORM.id == author_id)
         query_result = await self.__session.scalars(stmt)
         author = query_result.one()
 
@@ -40,20 +40,20 @@ class AuthorsRepository:
         await self.__session.commit()
 
 
-    async def get_all(self, search_params: AuthorsSearchModel) -> dict[int, AuthorGetModel]:
-        stmt = select(Authors)
+    async def get_all(self, search_params: AuthorSearchDTO) -> dict[int, AuthorGetDTO]:
+        stmt = select(AuthorsORM)
 
         if search_params.name_part is not None:
             stmt = stmt.where(or_(
-                literal(search_params.name_part).icontains(Authors.f),
-                literal(search_params.name_part).icontains(Authors.i),
-                literal(search_params.name_part).icontains(Authors.o),
+                literal(search_params.name_part).icontains(AuthorsORM.f),
+                literal(search_params.name_part).icontains(AuthorsORM.i),
+                literal(search_params.name_part).icontains(AuthorsORM.o),
             ))
 
-        stmt = stmt.order_by(Authors.f, Authors.i, Authors.o)
+        stmt = stmt.order_by(AuthorsORM.f, AuthorsORM.i, AuthorsORM.o)
 
         authors = await self.__session.scalars(stmt)
-        return {author.id: AuthorGetModel.model_validate(author) for author in authors.all()}
+        return {author.id: AuthorGetDTO.model_validate(author) for author in authors.all()}
 
 
 def get_repository(

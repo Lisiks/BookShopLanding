@@ -1,10 +1,10 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Annotated
 
-from .books_models import BookShortModel
+from .books_dto import BookShortDTO
 
 
-class OrderItemsBaseModel(BaseModel):
+class OrderItemsBaseDTO(BaseModel):
     book_id: Annotated[int, Field(gt=0, alias="bookId")]
     count: Annotated[int, Field(gt=0, le=20)]
 
@@ -15,14 +15,14 @@ class OrderItemsBaseModel(BaseModel):
     )
 
 
-class OrderItemsPostModel(OrderItemsBaseModel):
+class OrderItemsPostDTO(OrderItemsBaseDTO):
     ...
 
 
-class OrderItemsGetModel(OrderItemsBaseModel):
+class OrderItemsGetDTO(OrderItemsBaseDTO):
     price: float
     order_id: Annotated[int, Field(gt=0, alias="orderId")]
-    book: BookShortModel
+    book: BookShortDTO
 
 
   

@@ -10,7 +10,7 @@ class PaginationBase(BaseModel):
     page: Annotated[int, Field(ge=0, default=0)]
 
 
-class BookSearchModel(PaginationBase):
+class BookSearchDTO(PaginationBase):
     title: Annotated[Optional[str], Field(max_length=200, default=None)]
     min_price: Annotated[Optional[float], Field(gt=0.0, alias="minPrice", default=None)]
     max_price: Annotated[Optional[float], Field(gt=0.0, alias="maxPrice", default=None)]
@@ -26,7 +26,7 @@ class BookSearchModel(PaginationBase):
         return self.page * config.pagination.books_page_size
 
 
-class UsersSearchModel(PaginationBase):
+class UserSearchDTO(PaginationBase):
     username: Annotated[Optional[str], Field(max_length=100, default=None)]
     is_admin: bool
 
@@ -39,19 +39,19 @@ class UsersSearchModel(PaginationBase):
         return self.page * config.pagination.users_page_size
 
 
-class JahnresSearchModel(BaseModel):
+class GenreSearchDTO(BaseModel):
     name: Annotated[Optional[str], Field(max_length=100, default=None)]
 
 
-class AuthorsSearchModel(BaseModel):
+class AuthorSearchDTO(BaseModel):
     name_part: Annotated[Optional[str], Field(max_length=100, default=None, alias="namePart")]
 
 
-class ShopSearchModel(BaseModel):
+class ShopSearchDTO(BaseModel):
     address: Annotated[Optional[str], Field(max_length=300, default=None)]
 
 
-class OrderSearchModel(PaginationBase):
+class OrderSearchDTO(PaginationBase):
     status: Optional[OrderStatuses] = None
     shop_id: Annotated[Optional[int], Field(alias="shopId")] = None
 

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, label, text
+from sqlalchemy import select, text
 from fastapi import Depends
 from typing import Annotated
 

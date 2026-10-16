@@ -1,8 +1,8 @@
 """create_all
 
-Revision ID: 44dc28e52d4c
+Revision ID: 550dce8da713
 Revises: 
-Create Date: 2026-09-18 14:38:26.029065
+Create Date: 2026-10-16 21:54:10.961869
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '44dc28e52d4c'
+revision: str = '550dce8da713'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,8 +28,8 @@ def upgrade() -> None:
     sa.Column('o', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_authors_f'), 'authors', ['f'], unique=False)
-    op.create_table('jahnres',
+    op.create_index('fio_idx', 'authors', ['f', 'i', 'o'], unique=False)
+    op.create_table('genres',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('id'),
@@ -37,9 +37,14 @@ def upgrade() -> None:
     )
     op.create_table('shops',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('address', sa.Text(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.Column('phone', sa.String(length=20), nullable=False),
+    sa.Column('town', sa.String(length=100), nullable=False),
+    sa.Column('street', sa.String(length=100), nullable=False),
+    sa.Column('housing', sa.String(length=6), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('phone')
     )
+    op.create_index('address_idx', 'shops', ['town', 'street', 'housing'], unique=True)
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=100), nullable=False),
@@ -54,17 +59,19 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=200), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('author_id', sa.Integer(), nullable=True),
+    sa.Column('author_id', sa.Integer(), nullable=False),
+    sa.Column('genre_id', sa.Integer(), nullable=False),
     sa.Column('page_count', sa.Integer(), nullable=False),
     sa.Column('write_year', sa.Integer(), nullable=False),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('isbn', sa.CHAR(length=17), nullable=False),
     sa.Column('image_file_path', sa.Text(), nullable=False),
-    sa.Column('demo_file_path', sa.Text(), nullable=True),
+    sa.Column('demo_file_path', sa.Text(), nullable=False),
     sa.CheckConstraint('page_count > 0', name='page_count_positive_ck'),
     sa.CheckConstraint('price > 0.00', name='price_positive_ck'),
     sa.CheckConstraint('write_year <= EXTRACT(year FROM NOW())', name='write_year_ck'),
-    sa.ForeignKeyConstraint(['author_id'], ['authors.id'], name='authors_id_fk', onupdate='CASCADE', ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['author_id'], ['authors.id'], name='authors_id_fk', onupdate='CASCADE', ondelete='RESTRICT'),
+    sa.ForeignKeyConstraint(['genre_id'], ['genres.id'], name='genres_id_fk', onupdate='CASCADE', ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('isbn')
     )
@@ -75,19 +82,13 @@ def upgrade() -> None:
     sa.Column('datetime', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('status', sa.Enum('InAssembly', 'Assembled', 'Received', 'Canceled', name='orderstatuses'), nullable=False),
-    sa.Column('shop_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['shop_id'], ['shops.id'], name='shops_id_fk', onupdate='CASCADE', ondelete='SET NULL'),
+    sa.Column('shop_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['shop_id'], ['shops.id'], name='shops_id_fk', onupdate='CASCADE', ondelete='RESTRICT'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='user_id_fk', onupdate='CASCADE', ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_index(op.f('ix_orders_datetime'), 'orders', ['datetime'], unique=False)
     op.create_index(op.f('ix_orders_status'), 'orders', ['status'], unique=False)
-    op.create_table('books_jahnres',
-    sa.Column('book_id', sa.Integer(), nullable=False),
-    sa.Column('jahnre_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['book_id'], ['books.id'], name='book_id_fk', onupdate='CASCADE', ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['jahnre_id'], ['jahnres.id'], name='jahnre_id_fk', onupdate='CASCADE', ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('book_id', 'jahnre_id', name='books_jahnres_pk')
-    )
     op.create_table('comments',
     sa.Column('book_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -97,6 +98,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='users_id_fk', onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('book_id', 'user_id', name='comments_pk')
     )
+    op.create_index(op.f('ix_comments_datetime'), 'comments', ['datetime'], unique=False)
     op.create_table('orders_items',
     sa.Column('order_id', sa.Integer(), nullable=False),
     sa.Column('book_id', sa.Integer(), nullable=False),
@@ -114,17 +116,19 @@ def downgrade() -> None:
     """Downgrade schema."""
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('orders_items')
+    op.drop_index(op.f('ix_comments_datetime'), table_name='comments')
     op.drop_table('comments')
-    op.drop_table('books_jahnres')
     op.drop_index(op.f('ix_orders_status'), table_name='orders')
+    op.drop_index(op.f('ix_orders_datetime'), table_name='orders')
     op.drop_table('orders')
     op.drop_index(op.f('ix_books_title'), table_name='books')
     op.drop_index(op.f('ix_books_price'), table_name='books')
     op.drop_table('books')
     op.drop_index(op.f('ix_users_is_admin'), table_name='users')
     op.drop_table('users')
+    op.drop_index('address_idx', table_name='shops')
     op.drop_table('shops')
-    op.drop_table('jahnres')
-    op.drop_index(op.f('ix_authors_f'), table_name='authors')
+    op.drop_table('genres')
+    op.drop_index('fio_idx', table_name='authors')
     op.drop_table('authors')
     # ### end Alembic commands ###

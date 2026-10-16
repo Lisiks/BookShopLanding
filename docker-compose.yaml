@@ -18,16 +18,33 @@ services:
       retries: 5
       start_period: 10s
       start_interval: 1s
+  
+  phppgadmin:
+    image: overconsulting/phppgadmin:latest
+    container_name: phppgadmin_container
+    ports:
+      - "8080:8080"
+    environment:
+      PG_HOST: postgres             
+      PG_DEFAULT_DB: ${DB_NAME}
+      PG_USER: ${DB_USER}
+      PG_PASSWORD: ${DB_PASSWORD}
+      APP_PASSWORD: ${PGADMIN_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   redis:
     image: redis:8-alpine
-    container_name: redis
+    container_name: redis_container
     
     volumes:
       - redis_data:/data
     
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}","ping"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -56,6 +73,7 @@ services:
       REDIS_PORT: ${REDIS_PORT}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_DB: ${REDIS_DB}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
 
       PAGINATION_BOOKS_PAGE_SIZE: ${PAGINATION_BOOKS_PAGE_SIZE}
       PAGINATION_USERS_PAGE_SIZE: ${PAGINATION_USERS_PAGE_SIZE}
@@ -63,7 +81,7 @@ services:
 
       NAMESPACE_APP: ${NAMESPACE_APP}
       NAMESPACE_BOOKS: ${NAMESPACE_BOOKS}
-      NAMESPACE_JAHNRES: ${NAMESPACE_JAHNRES}
+      NAMESPACE_GENRES: ${NAMESPACE_GENRES}
       NAMESPACE_AUTHORS: ${NAMESPACE_AUTHORS}
       NAMESPACE_COMMENTS: ${NAMESPACE_COMMENTS}
       NAMESPACE_ORDERS: ${NAMESPACE_ORDERS}

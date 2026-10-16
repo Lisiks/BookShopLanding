@@ -47,7 +47,7 @@ class AppConfig(BaseSettings):
 class Namespaces(BaseSettings):
     app: str
     books: str
-    jahnres: str
+    genres: str
     authors: str
     comments: str
     orders: str
@@ -76,6 +76,7 @@ class RedisConfig(BaseSettings):
     host: str
     port: int
     db: int
+    password: str
 
     model_config = SettingsConfigDict(
         case_sensitive=False,

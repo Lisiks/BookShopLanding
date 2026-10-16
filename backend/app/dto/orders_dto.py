@@ -1,14 +1,14 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
-from typing import Annotated
+from typing import Annotated, Optional
 from datetime import datetime
 
-from .order_items_models import OrderItemsGetModel, OrderItemsPostModel
-from .shops_models import ShopGetModel
-from .users_models import UserGetModel
+from .order_items_dto import OrderItemsGetDTO, OrderItemsPostDTO
+from .shops_dto import ShopGetDTO
+from .users_dto import UserGetDTO
 from ..enums import OrderStatuses
 
 
-class OrderBaseModel(BaseModel):
+class OrderBaseDTO(BaseModel):
     shop_id: Annotated[int, Field(gt=0, alias="shopId")]
 
     model_config = ConfigDict(
@@ -18,24 +18,24 @@ class OrderBaseModel(BaseModel):
     )
 
 
-class OrderPostModel(OrderBaseModel):
-    items: Annotated[list[OrderItemsPostModel], Field(min_length=1, max_length=10, alias="items")]
+class OrderPostDTO(OrderBaseDTO):
+    items: Annotated[list[OrderItemsPostDTO], Field(min_length=1, max_length=10, alias="items")]
 
     @field_validator("items", mode="after")
     @classmethod
-    def validate_items_unique(cls, value: list[OrderItemsPostModel]) -> list[OrderItemsPostModel]:
+    def validate_items_unique(cls, value: list[OrderItemsPostDTO]) -> list[OrderItemsPostDTO]:
         items_id_list = list(map(lambda item: item.book_id, value))
         if len(items_id_list) != len(set(items_id_list)):
             raise ValueError("Items list contains recurring positions!")
 
         return value
 
-class OrderGetModel(OrderBaseModel):
+class OrderGetDTO(OrderBaseDTO):
     id: int
     datetime: datetime
-    user_id: Annotated[int, Field(alias="userId")]
+    user_id: Annotated[Optional[int], Field(alias="userId", default=None)]
     status: OrderStatuses
 
-    user: UserGetModel
-    shop: ShopGetModel
-    items: Annotated[list[OrderItemsGetModel], Field(alias="items")]
+    user: Optional[UserGetDTO] = None
+    shop: ShopGetDTO
+    items: Annotated[list[OrderItemsGetDTO], Field(alias="items")]
