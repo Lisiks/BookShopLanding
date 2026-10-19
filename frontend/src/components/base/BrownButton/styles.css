@@ -1,0 +1,27 @@
+
+.brown-btn {
+    height: calc(40px + 0.1vh);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: var(--dark-brown-bold);
+
+    color: var(--first-layer-background-white);
+    font-size: var(--sub-large-font-size);
+    font-family: 'inter_regular';
+
+
+    box-shadow: 2px 2px 5px var(--shadow-black);
+    transition: all 0.2s 0s ease-in-out;
+}
+
+
+
+.brown-btn:focus {
+    outline: none;
+}
+
+.brown-btn:hover {
+    box-shadow: 2px 2px 5px var(--shadow-black-hover);
+    transform: translateY(-3px);
+}

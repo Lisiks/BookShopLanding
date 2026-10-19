@@ -1,0 +1,109 @@
+
+.book-item-block {
+    display: flex;
+    padding: 32px;
+    gap: 32px;
+    
+
+    color: var(--dark-brown-bold);
+    text-decoration: none;
+
+    background-color: var(--medium-layer-background-white);
+    border-radius: 16px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+
+    transition: all 0.2s 0s ease-in-out;
+}
+
+
+.book-item-block:hover {
+    box-shadow: 3px 3px 5px var(--shadow-black-hover);
+}
+
+
+.book-item-block > img {
+    display: block;
+    width: calc(300px + 4vw);
+    height: calc(300px + 4vw);
+
+    border-radius: 10px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+}
+
+
+.book-item-block > div {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+
+.book-item-info-block > a {
+    display: block;
+    color: var(--dark-brown-bold);
+    font-weight: bold;
+    font-family: 'inter_regular';
+    font-size: var(--large-font-size);
+    text-shadow: 1px 1px 2px var(--shadow-black);
+    text-decoration: none;
+}
+
+.book-item-info-block > a:hover {
+    text-decoration: 3px underline solid;
+}
+
+
+.book-item-info-block  > p {
+    color: var(--dark-brown-base);
+    font-family: 'inter_regular';
+    font-size: var(--medium-font-size);
+}
+
+
+.book-item-price-block {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.book-item-price-block > p {
+    flex-grow: 1;
+    color: var(--dark-brown-bold);
+    font-family: 'inter_regular';
+    font-size: var(--sub-large-font-size);
+}
+
+
+.book-item-price-block > button {
+    flex-grow: 1;
+    display: block;
+    height: calc(40px + 0.1vh);
+    padding: 0px 5px;
+
+    background-image: url("../../../../assets/images/ic_shoping_cart_white.svg");
+    background-repeat: no-repeat;
+    background-size: calc(30px + 0.10vw);
+    background-position: center;
+    background-color: var(--dark-brown-bold);
+    border-radius: 10px;
+    border: none;
+    white-space: pre;
+    
+    cursor: pointer;
+    box-shadow: 2px 2px 5px var(--shadow-black);
+    transition: all 0.2s 0s ease-in-out;
+}
+
+
+.book-item-price-block > button:focus {
+    outline: none;
+}
+
+
+.book-item-price-block > button:hover {
+    box-shadow: 2px 2px 5px var(--shadow-black-hover);
+    transform: translateY(-3px);
+}

@@ -1,0 +1,22 @@
+.book-page-book-list {
+    flex-grow: 1;
+    margin-top: 18px;
+
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 1fr 1fr;
+    
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+
+    padding-bottom: 18px;
+}
+
+
+
+@media (width <= 1200px) {
+    .book-page-book-list {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,63 @@
+.add-window {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-color: rgba(100, 100, 100, 0.2);
+    width: 100%;
+    height: 100%;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.add-window > div {
+    background-color: var(--medium-layer-background-white);
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+}
+
+.add-window > div > img {
+    display: block;
+    border-radius: 10px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+    width: calc(400px + 5vw);
+    height: calc(400px + 5vw);
+}
+
+.add-window > div > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+}
+
+
+.add-window > div > div > div {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+}
+
+
+.add-window > div > div > div > button {
+    width: calc(40px + 0.1vh);
+}
+
+
+.add-window > div > div > div > p, .add-window > div > div > p {
+    color: var(--dark-brown-bold);
+    font-size: var(--sub-large-font-size);
+    font-family: 'inter_regular';
+}
+
+
+
+.add-window > div > button {
+    margin-top: 18px;
+    width: 100%;
+}

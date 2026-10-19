@@ -1,0 +1,45 @@
+
+
+.input-label > label {
+    font-family: 'inter_regular';
+    font-weight: bold;
+    font-size: var(--medium-font-size);
+    color: var(--dark-brown-bold);
+    display: block;
+    width: 100%;
+    margin-bottom: 3px;
+    transition: all 0.2s 0s ease-in-out;
+}
+
+.input-label > input {
+    font-family: 'inter_regular';
+    display: block;
+    width: 100%;
+    font-size: var(--sub-large-font-size);
+    color: var(--dark-brown-base);
+    background-color: var(--first-layer-background-white);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    height: calc(40px + 0.1vh);
+    padding: 5px;
+    box-shadow: 2px 2px 5px var(--shadow-black);
+    transition: all 0.2s 0s ease-in-out;
+
+}
+
+.input-label > input:focus, 
+.input-label > input:hover {
+    outline: none;
+    box-shadow: 2px 2px 5px var(--shadow-black-hover);
+}
+
+
+.input-label[haserror="true"] > input {
+    border: 1px solid var(--error-red);
+}
+
+
+.input-label[haserror="true"] > label {
+    color: var(--error-red);
+}
+
