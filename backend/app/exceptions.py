@@ -14,3 +14,7 @@ class InvalidSessionException(Exception):
     ...
 
 
+class EmptySessionException(Exception):
+    ...
+
+

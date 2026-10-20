@@ -4,12 +4,16 @@ from fastapi import Depends, Cookie
 from ..settings import config
 from .redis_manager import RedisManager
 from ..dto.users_dto import UserGetDTO
-from ..exceptions import ForbidenException, InvalidSessionException
+from ..exceptions import ForbidenException, InvalidSessionException, EmptySessionException
 
 
 async def auth_user(
-    session: Annotated[str, Cookie(alias=config.session.cookie_key)]
+    session: Annotated[str, Cookie(alias=config.session.cookie_key)] = None
 ) -> UserGetDTO:
+    if session is None:
+        raise EmptySessionException("Session cookie is empty!")
+
+    
     session_data = await RedisManager.read_session(session)
 
     if session_data is None:
@@ -20,8 +24,11 @@ async def auth_user(
 
 
 async def auth_admin(
-    session: Annotated[str, Cookie(alias=config.session.cookie_key)]
+    session: Annotated[str, Cookie(alias=config.session.cookie_key)] = None
 ) -> UserGetDTO:
+    if session is None:
+        raise EmptySessionException("Session cookie is empty!")
+    
     session_data = await RedisManager.read_session(session)
 
     if session_data is None:

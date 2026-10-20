@@ -8,7 +8,7 @@ import socket
 
 
 from ..settings import config
-from ..exceptions import InvalidSessionException, LoginException, ForbidenException
+from ..exceptions import InvalidSessionException, LoginException, ForbidenException, EmptySessionException
 
 
 
@@ -19,6 +19,11 @@ def set_exception_handlers(app: FastAPI) -> None:
         responce = JSONResponse(content={"msg":"invalid session, cookie was cleared"}, status_code=status.HTTP_401_UNAUTHORIZED)
         responce.delete_cookie(key=config.session.cookie_key)
         return responce
+
+
+    @app.exception_handler(EmptySessionException)
+    def expmty_session_exception(request: Request, exc: EmptySessionException) -> JSONResponse:
+        return JSONResponse(content={"msg":"You are not authorised"}, status_code=status.HTTP_401_UNAUTHORIZED)
 
 
     @app.exception_handler(sqlalchemy.exc.NoResultFound)
