@@ -1,0 +1,20 @@
+.profile-page-user-data {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--medium-layer-background-white);
+    border-radius: 16px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+    padding: 32px;
+    margin-top: 18px;
+}
+
+
+.profile-page-user-data > p {
+    color: var(--dark-brown-bold);
+    font-size: var(--large-font-size);
+    font-family: 'inter_regular';
+}
+
+.profile-page-user-data > button {
+    width: calc(120px + 2vw);
+}

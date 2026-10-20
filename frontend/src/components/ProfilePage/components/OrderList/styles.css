@@ -1,0 +1,10 @@
+.profile-page-order-list {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 18px;
+    overflow: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
