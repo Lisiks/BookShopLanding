@@ -1,57 +1,46 @@
 const API_ORIGIN = "http://localhost:8000";
 
 class QueryManager {
-    static login = async (loginFormData) => {
+    static sendResponce = async (url, method, body) => {
         try {
             const responce = await fetch(
-                `${API_ORIGIN}/accounts/login`,
+                url,
                 {
-                    method: "POST",
-                    body: loginFormData
+                    method: method,
+                    credentials: "include",
+                    body: body
+                    
                 }
-            );
-
+            )
             return {
                 "responceStatus": responce.status,
                 "responceBody": await responce.json()
-            }
-
-
+            };
         } catch (error) {
+            console.log(error.message)
             return {
                 "responceStatus": Number.NaN,
                 "responceBody": {}
             };
-        }
+        };
+    }
+
+    static login = async (loginFormData) => {
+        return await this.sendResponce(`${API_ORIGIN}/accounts/login`, "POST", loginFormData);
     }
 
 
     static register = async (registerFormData) => {
-        try {
-            const responce = await fetch(
-                `${API_ORIGIN}/accounts/`,
-                {
-                    method: "POST",
-                    body: registerFormData
-                }
-            );
+        return await this.sendResponce(`${API_ORIGIN}/accounts/`, "POST", registerFormData);   
+    }
 
-            return {
-                "responceStatus": responce.status,
-                "responceBody": await responce.json()
-            }
-            
-        } catch (error) {
-            return {
-                "responceStatus": Number.NaN,
-                "responceBody": {}
-            };
-        }
-        
 
-        
+    static logout = async () => {
+        return await this.sendResponce(`${API_ORIGIN}/accounts/logout`, "GET")
+    }
 
-        
+    static me = async () => {
+        return await this.sendResponce(`${API_ORIGIN}/accounts/me`, "GET")
     }
 }
 
