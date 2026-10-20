@@ -8,7 +8,7 @@ from ..exceptions import ForbidenException, InvalidSessionException, EmptySessio
 
 
 async def auth_user(
-    session: Annotated[str, Cookie(alias=config.session.cookie_key)] = None
+    session: Annotated[Optional[str], Cookie(alias=config.session.cookie_key)] = None
 ) -> UserGetDTO:
     if session is None:
         raise EmptySessionException("Session cookie is empty!")
@@ -24,7 +24,7 @@ async def auth_user(
 
 
 async def auth_admin(
-    session: Annotated[str, Cookie(alias=config.session.cookie_key)] = None
+    session: Annotated[Optional[str], Cookie(alias=config.session.cookie_key)] = None
 ) -> UserGetDTO:
     if session is None:
         raise EmptySessionException("Session cookie is empty!")
