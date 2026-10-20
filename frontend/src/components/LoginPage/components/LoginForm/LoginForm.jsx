@@ -1,13 +1,29 @@
+import { useContext } from "react";
+
 import { Link } from "react-router";
 import BrownButton from "../../../base/BrownButton/BrownButton";
 import InputLabel from "../../../base/InputLabel/InputLabel";
+
+import { LoginPageContext } from "../../LoginPageContext";
 
 import "./styles.css"
 
 
 const LoginForm = () => {
+    const {
+        loginValue, 
+        passwordValue,
+        loginIncorrectValue,
+        passwordIncorrectValue,
+        loginIncorrectReason,
+        passwordIncorrectReason,
+        inputLogin,
+        inputPassword,
+        loginFormSubmit
+    } = useContext(LoginPageContext);
+
     return (
-        <form className="login-form">
+        <form className="login-form" onSubmit={loginFormSubmit}>
             <h1>Вход</h1>
 
             <InputLabel
@@ -15,15 +31,21 @@ const LoginForm = () => {
                 name="username"
                 inputType="text"
                 inputMaxLength={30}
-                labelText="Логин:"
+                labelText={"Логин: " + loginIncorrectReason}
+                hasError={loginIncorrectValue}
+                state={loginValue}
+                setState={inputLogin}
             />
 
             <InputLabel
                 id="login-form-password-inp"
-                name="passwordPlain"
+                name="plainPassword"
                 inputType="password"
                 inputMaxLength={72}
-                labelText="Пароль:"
+                labelText={"Пароль: " + passwordIncorrectReason}
+                hasError={passwordIncorrectValue}
+                state={passwordValue}
+                setState={inputPassword}
             />
 
 
