@@ -66,16 +66,16 @@ const LoginPageContextProvider = (props) => {
 
         if (loginResponce.responceStatus === 200) {
             navigate("/profile");
-        } else if (loginResponce.responceStatus === Number.NaN) {
+        } else if (isNaN(loginResponce.responceStatus)) {
             alert("Проблемы с подключением к серверу.")
         } else if (loginResponce.responceStatus === 422) {
             alert("Введенные данные в соответсвии с валидацией формы.")
         } else if (loginResponce.responceStatus === 401) {
             setLoginIncorrectValue(true);
             setLoginIncorrectReason("Некорректное имя пользователя или пароль");
+        } else if (loginResponce.responceStatus === 400) {
+            navigate("/profile");
         }
-
-
 
         setFormSubmit(false);
     }

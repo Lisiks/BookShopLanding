@@ -94,7 +94,7 @@ const RegisterPageContextProvider = (props) => {
         
         if (registerResponce.responceStatus === 201) {
             navigate("/login");
-        } else if (registerResponce.responceStatus === Number.NaN) {
+        } else if (isNaN(registerResponce.responceStatus)) {
             alert("Проблемы с подключением к серверу.")
         } else if (registerResponce.responceStatus === 422) {
             alert("Введенные данные в соответсвии с валидацией формы.")
