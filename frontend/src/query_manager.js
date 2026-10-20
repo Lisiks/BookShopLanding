@@ -2,38 +2,56 @@ const API_ORIGIN = "http://localhost:8000";
 
 class QueryManager {
     static login = async (loginFormData) => {
-        const responce = await fetch(
-            `${API_ORIGIN}/accounts/login`,
-            {
-                method: "POST",
-                headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                body: loginFormData
+        try {
+            const responce = await fetch(
+                `${API_ORIGIN}/accounts/login`,
+                {
+                    method: "POST",
+                    body: loginFormData
+                }
+            );
+
+            return {
+                "responceStatus": responce.status,
+                "responceBody": await responce.json()
             }
-        );
 
-        if (responce.ok) {
-            return await responce.json();
-        };
 
-        throw new Error("Incorrect Login Data!");
+        } catch (error) {
+            return {
+                "responceStatus": Number.NaN,
+                "responceBody": {}
+            };
+        }
     }
 
 
     static register = async (registerFormData) => {
-        const responce = await fetch(
-            `${API_ORIGIN}/accounts/`,
-            {
-                method: "POST",
-                headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                body: registerFormData
+        try {
+            const responce = await fetch(
+                `${API_ORIGIN}/accounts/`,
+                {
+                    method: "POST",
+                    body: registerFormData
+                }
+            );
+
+            return {
+                "responceStatus": responce.status,
+                "responceBody": await responce.json()
             }
-        );
+            
+        } catch (error) {
+            return {
+                "responceStatus": Number.NaN,
+                "responceBody": {}
+            };
+        }
+        
 
-        if (responce.ok) {
-            return await responce.json();
-        };
+        
 
-        throw new Error("Incorrect Register Data!");
+        
     }
 }
 
