@@ -1,15 +1,15 @@
 const API_ORIGIN = "http://localhost:8000";
 
 class QueryManager {
-    static sendResponce = async (url, method, body) => {
+    static sendResponce = async (url, signal, method, body) => {
         try {
             const responce = await fetch(
                 url,
                 {
                     method: method,
                     credentials: "include",
-                    body: body
-                    
+                    body: body,
+                    signal: signal
                 }
             )
             return {
@@ -25,22 +25,37 @@ class QueryManager {
         };
     }
 
-    static login = async (loginFormData) => {
-        return await this.sendResponce(`${API_ORIGIN}/accounts/login`, "POST", loginFormData);
+    static getBooks = async (queryParams, signal) => {
+        const searchUrlParams = new URLSearchParams(queryParams)
+        return await this.sendResponce(`${API_ORIGIN}/books/?${searchUrlParams.toString()}`, signal, "GET",)
+    }
+
+    static getAuthors = async (signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/authors/`, signal, "GET",)
+    }
+
+    static getGenres = async (signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/genres/`, signal, "GET",)
     }
 
 
-    static register = async (registerFormData) => {
-        return await this.sendResponce(`${API_ORIGIN}/accounts/`, "POST", registerFormData);   
+
+    static login = async (loginFormData, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/accounts/login`, signal, "POST", loginFormData);
     }
 
 
-    static logout = async () => {
-        return await this.sendResponce(`${API_ORIGIN}/accounts/logout`, "GET")
+    static register = async (registerFormData, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/accounts/`, signal, "POST", registerFormData);   
     }
 
-    static me = async () => {
-        return await this.sendResponce(`${API_ORIGIN}/accounts/me`, "GET")
+
+    static logout = async (signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/accounts/logout`, signal, "GET")
+    }
+
+    static me = async (signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/accounts/me`, signal, "GET")
     }
 }
 
