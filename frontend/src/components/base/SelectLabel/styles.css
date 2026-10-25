@@ -2,7 +2,7 @@
 .select-label > label {
     font-family: 'inter_regular';
     font-weight: bold;
-    font-size: var(--large-font-size);
+    font-size: var(--medium-font-size);
     color: var(--dark-brown-bold);
     display: block;
     width: 100%;
@@ -19,21 +19,20 @@
     background-color: var(--first-layer-background-white);
     border: 1px solid transparent;
     border-radius: 10px;
-    height: calc(40px + 0.1vh);
     padding: 5px;
     box-shadow: 2px 2px 5px var(--shadow-black);
     transition: all 0.2s 0s ease-in-out;
 
 }
 
-.select-label > input:focus, 
-.select-label > input:hover {
+.select-label > select:focus, 
+.select-label > select:hover {
     outline: none;
     box-shadow: 2px 2px 5px var(--shadow-black-hover);
 }
 
 
-.select-label[haserror="true"] > input {
+.select-label[haserror="true"] > select {
     border: 1px solid var(--error-red);
 }
 
