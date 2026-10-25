@@ -14,7 +14,7 @@ class BookSearchDTO(PaginationBase):
     title: Annotated[Optional[str], Field(max_length=200, default=None)]
     min_price: Annotated[Optional[float], Field(gt=0.0, alias="minPrice", default=None)]
     max_price: Annotated[Optional[float], Field(gt=0.0, alias="maxPrice", default=None)]
-    jahnre_id: Annotated[Optional[int], Field(gt=0, alias="jahnreId", default=None)]
+    genre_id: Annotated[Optional[int], Field(gt=0, alias="genreId", default=None)]
     author_id: Annotated[Optional[int], Field(gt=0, alias="authorId", default=None)]
 
     @computed_field

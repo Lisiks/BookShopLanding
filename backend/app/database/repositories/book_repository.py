@@ -92,8 +92,8 @@ class BooksRepository:
         if search_params.author_id is not None:
             stmt = stmt.where(BooksORM.author_id == search_params.author_id)
 
-        if search_params.jahnre_id is not None:
-            stmt = stmt.where(BooksORM.author_id == search_params.jahnre_id)
+        if search_params.genre_id is not None:
+            stmt = stmt.where(BooksORM.genre_id == search_params.genre_id)
 
         stmt = stmt.order_by(BooksORM.id).limit(search_params.limit).offset(search_params.offset)
 

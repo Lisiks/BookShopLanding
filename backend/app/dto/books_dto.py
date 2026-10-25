@@ -15,8 +15,8 @@ class BookBaseDTO(BaseModel):
 
     title: Annotated[str, Field(max_length=200)]
     description: Annotated[Optional[str], Field(default=None)]
-    author_id: Annotated[Optional[int], Field(gt=0, alias="authorId", default=None)]
-    genre_id: Annotated[Optional[int], Field(gt=0, alias="jahnreId", default=None)]
+    author_id: Annotated[int, Field(gt=0, alias="authorId", default=None)]
+    genre_id: Annotated[int, Field(gt=0, alias="genreId", default=None)]
     page_count: Annotated[int, Field(gt=0, alias="pageCount")]
     write_year: Annotated[int, Field(alias="writeYear")]
     price: Annotated[float, Field(gt=0.0, lt=100000000)]
