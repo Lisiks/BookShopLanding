@@ -1,7 +1,6 @@
 
 .brown-btn {
-    height: calc(40px + 0.1vh);
-    border: none;
+    border: 1px solid transparent;
     border-radius: 10px;
     cursor: pointer;
     background-color: var(--dark-brown-bold);
@@ -9,6 +8,8 @@
     color: var(--first-layer-background-white);
     font-size: var(--sub-large-font-size);
     font-family: 'inter_regular';
+    padding: 5px;
+    white-space: pre;
 
 
     box-shadow: 2px 2px 5px var(--shadow-black);
