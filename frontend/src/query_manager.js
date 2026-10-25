@@ -1,7 +1,7 @@
 const API_ORIGIN = "http://localhost:8000";
 
 class QueryManager {
-    static sendResponce = async (url, signal, method, body) => {
+    static sendResponce = async (url, signal, method, body, headers = {}) => {
         try {
             const responce = await fetch(
                 url,
@@ -9,7 +9,8 @@ class QueryManager {
                     method: method,
                     credentials: "include",
                     body: body,
-                    signal: signal
+                    signal: signal,
+                    headers: headers
                 }
             )
             return {
@@ -27,15 +28,27 @@ class QueryManager {
 
     static getBooks = async (queryParams, signal) => {
         const searchUrlParams = new URLSearchParams(queryParams)
-        return await this.sendResponce(`${API_ORIGIN}/books/?${searchUrlParams.toString()}`, signal, "GET",)
+        return await this.sendResponce(`${API_ORIGIN}/books/?${searchUrlParams.toString()}`, signal, "GET")
     }
 
     static getAuthors = async (signal) => {
-        return await this.sendResponce(`${API_ORIGIN}/authors/`, signal, "GET",)
+        return await this.sendResponce(`${API_ORIGIN}/authors/`, signal, "GET")
     }
 
     static getGenres = async (signal) => {
-        return await this.sendResponce(`${API_ORIGIN}/genres/`, signal, "GET",)
+        return await this.sendResponce(`${API_ORIGIN}/genres/`, signal, "GET")
+    }
+
+    static getShops = async (signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/shops/`, signal, "GET")
+    }
+
+    static getBooksByList = async (jsonBookList, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/books/list`, signal, "POST", jsonBookList, {"Content-Type": "application/json"})
+    }
+
+    static createOrder = async (orderData, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/orders/`, signal, "POST", orderData, {"Content-Type": "application/json"})
     }
 
 
