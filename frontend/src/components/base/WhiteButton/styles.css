@@ -1,0 +1,28 @@
+
+.white-btn {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: var(--first-layer-background-white);
+
+    color: var(--dark-brown-bold);
+    font-size: var(--sub-large-font-size);
+    font-family: 'inter_regular';
+    padding: 5px;
+    white-space: pre;
+
+
+    box-shadow: 2px 2px 5px var(--shadow-black);
+    transition: all 0.2s 0s ease-in-out;
+}
+
+
+
+.white-btn:focus {
+    outline: none;
+}
+
+.white-btn:hover {
+    box-shadow: 2px 2px 5px var(--shadow-black-hover);
+    transform: translateY(-3px);
+}
