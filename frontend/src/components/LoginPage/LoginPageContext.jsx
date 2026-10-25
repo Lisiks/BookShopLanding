@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import QueryManager from "../../query_manager";
 
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 
 export const LoginPageContext = createContext({});
@@ -21,7 +21,11 @@ const LoginPageContextProvider = (props) => {
     const [loginIncorrectReason, setLoginIncorrectReason] = useState("");
     const [passwordIncorrectReason, setPasswordIncorrectReason] = useState("");
 
+    const abortController = new AbortController();
+
     const navigate = useNavigate();
+
+    useEffect(() => {return () => {abortController.abort()}}, []);
 
 
     const inputLogin = (value) => {
@@ -36,7 +40,7 @@ const LoginPageContextProvider = (props) => {
         setPasswordIncorrectReason("");
     }
 
-    const loginFormSubmit = async (event) => {
+    const loginFormSubmit = (event) => {
         event.preventDefault();
 
         if (formSubmit) {
@@ -62,20 +66,18 @@ const LoginPageContextProvider = (props) => {
 
         const loginFormData = new FormData(event.target);
 
-        const loginResponce = await QueryManager.login(loginFormData);
-
-        if (loginResponce.responceStatus === 200) {
-            navigate("/profile");
-        } else if (isNaN(loginResponce.responceStatus)) {
-            alert("Проблемы с подключением к серверу.")
-        } else if (loginResponce.responceStatus === 422) {
-            alert("Введенные данные в соответсвии с валидацией формы.")
-        } else if (loginResponce.responceStatus === 401) {
-            setLoginIncorrectValue(true);
-            setLoginIncorrectReason("Некорректное имя пользователя или пароль");
-        } else if (loginResponce.responceStatus === 400) {
-            navigate("/profile");
-        }
+        QueryManager.login(loginFormData, abortController.signal).then( (loginResponce) => {
+            if (loginResponce.responceStatus === 200) {
+                navigate("/profile");
+            } else if (loginResponce.responceStatus === 422) {
+                alert("Введенные данные в соответсвии с валидацией формы.")
+            } else if (loginResponce.responceStatus === 401) {
+                setLoginIncorrectValue(true);
+                setLoginIncorrectReason("Некорректное имя пользователя или пароль");
+            } else if (loginResponce.responceStatus === 400) {
+                navigate("/profile");
+            }
+        });
 
         setFormSubmit(false);
     }
