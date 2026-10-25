@@ -10,7 +10,8 @@ class QueryManager {
                     credentials: "include",
                     body: body,
                     signal: signal,
-                    headers: headers
+                    headers: headers,
+                    cache: 'no-store'
                 }
             )
             return {
@@ -49,6 +50,11 @@ class QueryManager {
 
     static createOrder = async (orderData, signal) => {
         return await this.sendResponce(`${API_ORIGIN}/orders/`, signal, "POST", orderData, {"Content-Type": "application/json"})
+    }
+
+    static getOrders = async (queryParams, signal) => {
+        const searchUrlParams = new URLSearchParams(queryParams);
+        return await this.sendResponce(`${API_ORIGIN}/accounts/me/orders/?${searchUrlParams.toString()}`, signal, "GET")
     }
 
 
