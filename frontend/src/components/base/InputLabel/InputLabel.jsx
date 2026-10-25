@@ -13,7 +13,7 @@ const InputLabel = (props) => {
                 maxLength={inputMaxLength} 
                 value={state} 
                 className={inputClassName}
-                onInput={(event) => {setState(event.target.value)}}
+                onInput={(event) => { setState(event.target.value) }}
             />
         </div>
     )

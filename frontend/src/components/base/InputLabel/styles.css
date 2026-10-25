@@ -20,7 +20,6 @@
     background-color: var(--first-layer-background-white);
     border: 1px solid transparent;
     border-radius: 10px;
-    height: calc(40px + 0.1vh);
     padding: 5px;
     box-shadow: 2px 2px 5px var(--shadow-black);
     transition: all 0.2s 0s ease-in-out;
