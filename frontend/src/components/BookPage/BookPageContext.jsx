@@ -152,16 +152,14 @@ const BookPageContextProvider = (props) => {
 
         QueryManager.getBooks(paramsObject, abortController.signal).then(
             (bookData) => {
+                setBookIsSearch(false);
                 bookListDomRef.current.scrollTop = 0;
                 setBookMap(new Map(Object.entries(bookData.responceBody)));
                 setBookSearchParams(paramsObject);
                 setBookPageIsLast(false)
+                setSearchWindowOpen(false);
             }
         );
-
-        setSearchWindowOpen(false);
-        setBookIsSearch(false);
-
     }
 
 
@@ -197,8 +195,8 @@ const BookPageContextProvider = (props) => {
         const newSearchParams = structuredClone(bookSearchParams);
         newSearchParams.page++;
 
-        QueryManager.getBooks(newSearchParams, abortController.signal).then(
-            (responceData) => {
+        QueryManager.getBooks(newSearchParams, abortController.signal).then((responceData) => {
+                setBookIsSearch(false);
                 setBookSearchParams(newSearchParams);
 
 
@@ -215,7 +213,6 @@ const BookPageContextProvider = (props) => {
                 setBookMap(newBookMap);
             }
         );
-        setBookIsSearch(false);
     }
 
 
@@ -232,20 +229,21 @@ const BookPageContextProvider = (props) => {
         setBookIsSearch(true);
         const baseParams = {page: 0};
 
-        QueryManager.getBooks(baseParams, abortController.signal).then(
-            (bookData) => {
+        QueryManager.getBooks(baseParams, abortController.signal).then((bookData) => {
+                setBookTitle("");
+                setBookAuthorId("");
+                setBookGenreId("");
+                setBookMinPrice("");
+                setBookMaxPrice("");
+                setBookIsSearch(false);
+
                 bookListDomRef.current.scrollTop = 0;
                 setBookMap(new Map(Object.entries(bookData.responceBody)));
                 setBookSearchParams(baseParams);
                 setBookPageIsLast(false);
             }
         );
-        setBookTitle("");
-        setBookAuthorId("");
-        setBookGenreId("");
-        setBookMinPrice("");
-        setBookMaxPrice("");
-        setBookIsSearch(false);
+        
     }
 
     

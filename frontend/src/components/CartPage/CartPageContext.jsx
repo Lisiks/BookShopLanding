@@ -152,8 +152,8 @@ const CartPageContextProvider = (props) => {
             )
         })
 
-        QueryManager.createOrder(orderData, abortController.signal).then(
-            (responceData) => {
+        QueryManager.createOrder(orderData, abortController.signal).then((responceData) => {
+                setCreateOrderFormIsSubmit(false);
                 if (responceData.responceStatus === 404) {
                     alert("Часть книг из вашего заказа более недоступна для продажи. Пожалуйста, обновите страницу.");
                 } else if (responceData.responceStatus === 401) {
@@ -161,12 +161,13 @@ const CartPageContextProvider = (props) => {
                 } else if (responceData.responceStatus === 201) {
                     setBooksCartInfo({});
                     localStorage.setItem('cart', JSON.stringify({}));
-                    navigate("/profile")
+                    navigate("/profile");
                 }
+                
             }
         )
 
-        setCreateOrderFormIsSubmit(false);
+        
     };
 
     return (

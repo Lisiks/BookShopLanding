@@ -94,6 +94,7 @@ const RegisterPageContextProvider = (props) => {
         const registerFormdata = new FormData(event.target);
 
         QueryManager.register(registerFormdata, abortController.signal).then( (registerResponce) => {
+            setFormSubmit(false);
             if (registerResponce.responceStatus === 201) {
                 navigate("/login");
             } else if (registerResponce.responceStatus === 422) {
@@ -104,7 +105,7 @@ const RegisterPageContextProvider = (props) => {
             }
         });
         
-        setFormSubmit(false);
+        
     }
 
 

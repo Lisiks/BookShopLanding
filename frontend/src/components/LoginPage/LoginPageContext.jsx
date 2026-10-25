@@ -67,6 +67,7 @@ const LoginPageContextProvider = (props) => {
         const loginFormData = new FormData(event.target);
 
         QueryManager.login(loginFormData, abortController.signal).then( (loginResponce) => {
+            setFormSubmit(false);
             if (loginResponce.responceStatus === 200) {
                 navigate("/profile");
             } else if (loginResponce.responceStatus === 422) {
@@ -79,7 +80,7 @@ const LoginPageContextProvider = (props) => {
             }
         });
 
-        setFormSubmit(false);
+        
     }
 
     return (
