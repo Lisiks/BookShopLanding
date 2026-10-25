@@ -19,15 +19,16 @@
     box-shadow: 3px 3px 5px var(--shadow-black);
 }
 
+
+
 .add-window > div > img {
-    display: block;
     border-radius: 10px;
     box-shadow: 3px 3px 5px var(--shadow-black);
-    width: calc(400px + 5vw);
-    height: calc(400px + 5vw);
+    width: calc(330px + 2vw);
 }
 
-.add-window > div > div {
+
+.add-window-manage-count-block {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -35,8 +36,7 @@
 }
 
 
-.add-window > div > div > div {
-
+.add-window-manage-count-block > div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -44,12 +44,12 @@
 }
 
 
-.add-window > div > div > div > button {
-    width: calc(40px + 0.1vh);
+.add-window-manage-count-block > div > button {
+    width: calc(40px + 0.3vw);
 }
 
 
-.add-window > div > div > div > p, .add-window > div > div > p {
+.add-window-manage-count-block > div > p, .add-window-manage-count-block > p {
     color: var(--dark-brown-bold);
     font-size: var(--sub-large-font-size);
     font-family: 'inter_regular';

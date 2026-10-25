@@ -4,6 +4,9 @@ import BrownButton from "../BrownButton/BrownButton";
 
 import "./styles.css"
 
+
+const API_ORIGIN = "http://localhost:8000";
+
 const AddWindow = (props) => {
     const {bookPrice, bookImageUrl, onAdd, onClose} = props;
 
@@ -30,8 +33,11 @@ const AddWindow = (props) => {
     return (
         <div className="add-window" ref={windowRef}>
             <div>
-                <img src={bookImageUrl} alt="Фотография обложки книги"/>
-                <div>
+                
+                <img src={`${API_ORIGIN}/${bookImageUrl}`} alt="Фотография обложки книги"/>
+                
+                
+                <div className="add-window-manage-count-block">
                     <div>
                         <BrownButton onClick={() => {if (count > 1) {setCount(count - 1)}}}>-</BrownButton>
                         <p>{count}</p>
