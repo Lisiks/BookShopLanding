@@ -9,24 +9,25 @@ export const ProfilePageContext = createContext({});
 const ProfilePageContextProvider = (props) => {
     const {children} = props;
 
-    const [userData, setUserData] = useState(null);
+    const [userData, setUserData] = useState({userId: 0, isBlocked: null, isAdmin: null, username: ""});
     const [logFormSubmit, setLogFormSubmit] = useState(false)
+
+    const abortController = new AbortController();
 
     const navigate = useNavigate();
 
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const meResponce = await QueryManager.me();
-            if (isNaN(meResponce.responceStatus)) {
-                alert("Проблемы с подключением к серверу.");
-            } else if (meResponce.responceStatus === 401) {
-                navigate("/login");
-            } else {
-                setUserData(meResponce.responceBody);
+        QueryManager.me(abortController.signal).then(
+            (meResponce) => {
+                if (meResponce.responceStatus === 401) {
+                    navigate("/login");
+                } else {
+                    setUserData(meResponce.responceBody);
+                }
             }
-        }
-        fetchUserData();
+        );
+        return () => {abortController.abort()};
     }, []);
 
     const logoutFormSubmit = async (event) => {
@@ -56,7 +57,7 @@ const ProfilePageContextProvider = (props) => {
                 "logoutFormSubmit": logoutFormSubmit
             }}
         >
-            {userData !== null && children}
+            {children}
         </ProfilePageContext.Provider>
     )
 }
