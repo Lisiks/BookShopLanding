@@ -1,0 +1,14 @@
+.cart-page-create-order-form {
+    margin-top: 18px;
+    padding: 32px;
+
+    background-color: var(--medium-layer-background-white);
+    border-radius: 16px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+}
+
+.cart-page-create-order-from-buttons-block {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}

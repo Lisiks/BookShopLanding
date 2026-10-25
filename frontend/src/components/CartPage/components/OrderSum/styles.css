@@ -1,0 +1,14 @@
+.cart-page-order-sum-block {
+    margin-top: 18px;
+    padding: 32px;
+
+    background-color: var(--medium-layer-background-white);
+    border-radius: 16px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+}
+
+.cart-page-order-sum-block > p {
+    color: var(--dark-brown-bold);
+    font-size: var(--large-font-size);
+    font-family: 'inter_regular';
+}

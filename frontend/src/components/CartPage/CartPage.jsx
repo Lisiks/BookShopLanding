@@ -1,6 +1,24 @@
+import CartPageContextProvider from "./CartPageContext"
+
+import Header from "../base/Header/Header"
+import CreateForm from "./components/CreateForm/CreateForm"
+import ItemList from "./components/ItemList/ItemList"
+import OrderSum from "./components/OrderSum/OrderSum"
+
+import "./styles.css"
+
+
+
 const CartPage = () => {
     return (
-        <h1>This is cart page</h1>
+        <CartPageContextProvider>
+            <main className="cart-page-main">
+                <Header pageName="Корзина"/>
+                <OrderSum/>
+                <CreateForm/>
+                <ItemList/>
+            </main>
+        </CartPageContextProvider>
     )
 }
 

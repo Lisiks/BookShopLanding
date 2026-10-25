@@ -1,0 +1,6 @@
+.cart-page-item-list {
+    margin-top: 18px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
