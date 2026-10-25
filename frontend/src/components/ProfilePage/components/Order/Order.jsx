@@ -8,7 +8,8 @@ const Order = (props) => {
         orderDate,
         orderShop,
         orderStatus,
-        orderItems
+        orderItems,
+        ref
     } = props;
     
     const [active, setActive] = useState(false);
@@ -16,7 +17,7 @@ const Order = (props) => {
     const orderSum = orderItems.reduce((sum, itemData) => sum + itemData.count * itemData.price, 0).toFixed(2);
 
     return (
-        <div className="order" active={String(active)} onClick={() => {setActive(!active)}}>
+        <div className="order" active={String(active)} onClick={() => {setActive(!active)}} ref={ref}>
             <div className="order-character">
                 <p className="order-data-bold-paragraph">Заказ №{orderId}</p>
                 <p className="order-data-bold-paragraph">{orderDate}</p>
@@ -37,8 +38,8 @@ const Order = (props) => {
                 </div>
 
                 {orderItems.map((itemData) => 
-                    <div key={`order-${orderId}-item-${itemData.id}`}>
-                        <p>{itemData.title}</p>
+                    <div key={`order-${orderId}-item-${itemData.bookId}`}>
+                        <p>{itemData.book.title} x{itemData.count}</p>
                         <p>{(itemData.count * itemData.price).toFixed(2)} руб.</p>
                     </div>
                 )}                  
