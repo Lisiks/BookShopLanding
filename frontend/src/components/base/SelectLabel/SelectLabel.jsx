@@ -15,7 +15,6 @@ const SelectLabel = (props) => {
                 className={selectClassName} 
                 value={state} 
                 onInput={(event) => {setState(event.target.value)}}
-                haserror={hasError}
             >
                 <option value="">{placeHolderText}</option>
                 {children}
