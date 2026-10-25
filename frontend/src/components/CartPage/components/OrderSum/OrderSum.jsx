@@ -5,11 +5,11 @@ import { CartPageContext } from "../../CartPageContext";
 import "./styles.css"
 
 const OrderSum = () => {
-    const summ = 123.23
+    const {bookCartSum} = useContext(CartPageContext);
 
     return (
         <div className="cart-page-order-sum-block">
-            <p>Итого: {summ} руб.</p>
+            <p>Итого: {bookCartSum} руб.</p>
         </div>
     )
 };

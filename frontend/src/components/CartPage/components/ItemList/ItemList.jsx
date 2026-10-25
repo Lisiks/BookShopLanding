@@ -1,24 +1,18 @@
+import { useContext } from "react";
+
 import Item from "../Item/Item";
+import { CartPageContext } from "../../CartPageContext";
 
 import "./styles.css"
 
 const ItemList = () => {
-    const Items = [
-        {id: 2, title: "Понос", count: 2, price: 230.43},
-        {id: 3, title: "Понос2", count: 1, price: 330.43},
-        {id: 4, title: "Понос3", count: 3, price: 630.43},
-        {id: 2, title: "Понос", count: 2, price: 230.43},
-        {id: 3, title: "Понос2", count: 1, price: 330.43},
-        {id: 4, title: "Понос3", count: 333, price: 33630.43},
-        {id: 2, title: "Понос", count: 2, price: 230.43},
-        {id: 3, title: "Понос2", count: 1, price: 330.43},
-        {id: 4, title: "Понос3", count: 3, price: 630.43},
-    ]
+    const {bookCartInfoList} = useContext(CartPageContext);
 
     return (
-        <div class="cart-page-item-list">
-            {Items.map((itemData) => 
+        <div className="cart-page-item-list">
+            {bookCartInfoList.map((itemData) => 
                 <Item 
+                    key={`cart-item-${itemData.id}`}
                     bookId={itemData.id} 
                     bookTitle={itemData.title} 
                     bookCount={itemData.count}

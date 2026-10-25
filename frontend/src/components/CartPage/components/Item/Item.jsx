@@ -8,17 +8,17 @@ import BrownButton from "../../../base/BrownButton/BrownButton";
 const Item = (props) => {
     const {bookId, bookTitle, bookCount, bookPrice} = props;
 
-    const {incItemCount, decrItemCount, deleteItem} = useContext(CartPageContext);
+    const {incBookItemCount, decrBookItemCount, deleteBookItem} = useContext(CartPageContext);
 
     return (
         <div className="cart-page-item">
             <Link to={`/books/${bookId}`}>{bookTitle}</Link>
             <div className="cart-page-item-info">
-                <BrownButton type="button" onClick={decrItemCount}>-</BrownButton>
+                <BrownButton type="button" onClick={() => {decrBookItemCount(bookId)}}>-</BrownButton>
                 <p className="cart-page-item-info-count">{bookCount}</p>
-                <BrownButton type="button" onClick={incItemCount}>+</BrownButton>
+                <BrownButton type="button" onClick={() => {incBookItemCount(bookId)}}>+</BrownButton>
                 <p className="cart-page-item-info-price">{(bookCount * bookPrice).toFixed(2)} руб.</p>
-                <BrownButton type="button" className="item-delete-btn" onClick={deleteItem}> </BrownButton>
+                <BrownButton type="button" className="item-delete-btn" onClick={() => {deleteBookItem(bookId)}}> </BrownButton>
             </div>
         </div>
     )
