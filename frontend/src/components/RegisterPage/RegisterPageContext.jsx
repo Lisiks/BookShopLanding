@@ -1,7 +1,7 @@
 import QueryManager from "../../query_manager";
 
 import { useNavigate } from "react-router";
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const RegisterPageContext = createContext({});
 
@@ -23,7 +23,11 @@ const RegisterPageContextProvider = (props) => {
     const [passwordIncorrectReason, setPasswordIncorrectReason] = useState("");
     const [passwordConfirmIncorrectReason, setPasswordConfirmIncorrectReason] = useState("");
 
+    const abortController = new AbortController();
+
     const navigate = useNavigate();
+
+    useEffect(() => {return () => {abortController.abort()}}, []);
 
 
     const inputLogin = (value) => {
@@ -50,7 +54,7 @@ const RegisterPageContextProvider = (props) => {
     
 
     
-    const registerFormSubmit = async (event) => {
+    const registerFormSubmit = (event) => {
         event.preventDefault();
 
         if (formSubmit) {
@@ -89,20 +93,17 @@ const RegisterPageContextProvider = (props) => {
 
         const registerFormdata = new FormData(event.target);
 
-    
-        const registerResponce = await QueryManager.register(registerFormdata);
+        QueryManager.register(registerFormdata, abortController.signal).then( (registerResponce) => {
+            if (registerResponce.responceStatus === 201) {
+                navigate("/login");
+            } else if (registerResponce.responceStatus === 422) {
+                alert("Введенные данные в соответсвии с валидацией формы.")
+            } else if (registerResponce.responceStatus === 409) {
+                setLoginIncorrectValue(true);
+                setLoginIncorrectReason("Данный пользователь уже зарегестрирован");
+            }
+        });
         
-        if (registerResponce.responceStatus === 201) {
-            navigate("/login");
-        } else if (isNaN(registerResponce.responceStatus)) {
-            alert("Проблемы с подключением к серверу.")
-        } else if (registerResponce.responceStatus === 422) {
-            alert("Введенные данные в соответсвии с валидацией формы.")
-        } else if (registerResponce.responceStatus === 409) {
-            setLoginIncorrectValue(true);
-            setLoginIncorrectReason("Данный пользователь уже зарегестрирован");
-        }
-    
         setFormSubmit(false);
     }
 
