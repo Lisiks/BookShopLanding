@@ -7,20 +7,24 @@ import "./styles.css"
 
 
 const BookList = () => {
-    const {bookList} = useContext(BookPageContext);
+    const {bookList, bookListDomRef, setPageObserveRef} = useContext(BookPageContext);
+
+
     return (
-        <div className="book-page-book-list">
-            {bookList.map((bookInfo) =>
+        <div className="book-page-book-list" ref={bookListDomRef}>
+            {bookList.map((bookInfo, bookListIdx) =>
+            
                 <BookItem 
-                    bookId={bookInfo.bookId}
-                    bookImageUrl={bookInfo.bookImageUrl}
-                    bookTitle={bookInfo.bookTitle}
-                    bookAuthor={bookInfo.bookAuthor}
-                    bookGenre={bookInfo.bookGenre}
-                    bookYear={bookInfo.bookYear}
+                    ref={bookListIdx === bookList.length - 1 ? setPageObserveRef : null}
+                    bookId={bookInfo.id}
+                    bookImageUrl={bookInfo.imageFilePath}
+                    bookTitle={bookInfo.title}
+                    bookAuthor={`${bookInfo.author.f} ${bookInfo.author.i[0]}. ${bookInfo.author.o[0]}.`}
+                    bookGenre={bookInfo.genre.name}
+                    bookYear={bookInfo.writeYear}
                     isbn={bookInfo.isbn}
-                    bookPrice={bookInfo.bookPrice}
-                    key={`book-${bookInfo.bookId}`}
+                    bookPrice={Number(bookInfo.price).toFixed(2)}
+                    key={`book-${bookInfo.id}`}
                 />
             )}
         </div>        

@@ -17,54 +17,24 @@
 
 
 .book-page-search-form-params-btn {
-    height: calc(40px + 0.1vh);
-    width: calc(40px + 0.1vh);
+    width: calc(40px + 0.3vw);
     
     background-image: url("../../../../assets/images/ic_params_brown.svg");
     background-position: center;
     background-size: calc(30px + 0.05vw);
     background-repeat: no-repeat;
-    border: none;
-    border-radius: 10px;
-    background-color: var(--first-layer-background-white);
-
-    cursor: pointer;
-    
-    box-shadow: 2px 2px 5px var(--shadow-black);
-    transition: all 0.2s 0s ease-in-out;
 }
 
 .book-page-search-form-clear-btn {
-    height: calc(40px + 0.1vh);
-    width: calc(40px + 0.1vh);
+    width: calc(40px + 0.3vw);
 
     background-image: url("../../../../assets/images/ic_close_black.svg");
     background-position: center;
     background-size: calc(30px + 0.05vw);
     background-repeat: no-repeat;
-    border: none;
-    border-radius: 10px;
-    background-color: var(--dark-brown-bold);
-
-    cursor: pointer;
-
-    box-shadow: 2px 2px 5px var(--shadow-black);
-    transition: all 0.2s 0s ease-in-out;
 }
 
 
-.book-page-search-form-params-btn:hover,
-.book-page-search-form-clear-btn:hover {
-    box-shadow: 2px 2px 5px var(--shadow-black-hover);
-    transform: translateY(-3px);
-}
-
-
-
-.book-search-form-params-btn:focus, 
-.book-search-form-clear-btn:focus {
-    outline: none;
-}
 
 .search-inp {
     background-image: url("../../../../assets/images/ic_search_brown.svg");

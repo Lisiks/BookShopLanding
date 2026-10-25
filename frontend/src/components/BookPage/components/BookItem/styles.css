@@ -21,17 +21,21 @@
 }
 
 
-.book-item-block > img {
-    display: block;
+.book-item-block-image-container {
     width: calc(300px + 4vw);
-    height: calc(300px + 4vw);
-
-    border-radius: 10px;
-    box-shadow: 3px 3px 5px var(--shadow-black);
+    text-align: center;
 }
 
+.book-item-block-image-container > img {
+    height: calc(300px + 4vw);
+    border-radius: 10px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+} 
 
-.book-item-block > div {
+
+
+
+.book-item-block-info-container {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
@@ -79,31 +83,11 @@
 
 .book-item-price-block > button {
     flex-grow: 1;
-    display: block;
-    height: calc(40px + 0.1vh);
-    padding: 0px 5px;
 
     background-image: url("../../../../assets/images/ic_shoping_cart_white.svg");
     background-repeat: no-repeat;
     background-size: calc(30px + 0.10vw);
     background-position: center;
-    background-color: var(--dark-brown-bold);
-    border-radius: 10px;
-    border: none;
     white-space: pre;
-    
-    cursor: pointer;
-    box-shadow: 2px 2px 5px var(--shadow-black);
-    transition: all 0.2s 0s ease-in-out;
-}
 
-
-.book-item-price-block > button:focus {
-    outline: none;
-}
-
-
-.book-item-price-block > button:hover {
-    box-shadow: 2px 2px 5px var(--shadow-black-hover);
-    transform: translateY(-3px);
 }
