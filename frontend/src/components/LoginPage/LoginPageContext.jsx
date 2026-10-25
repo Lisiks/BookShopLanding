@@ -21,7 +21,7 @@ const LoginPageContextProvider = (props) => {
     const [loginIncorrectReason, setLoginIncorrectReason] = useState("");
     const [passwordIncorrectReason, setPasswordIncorrectReason] = useState("");
 
-    const abortController = new AbortController();
+    const [abortController, setAbortCintroller] = useState(new AbortController());
 
     const navigate = useNavigate();
 

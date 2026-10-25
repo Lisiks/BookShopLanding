@@ -23,7 +23,7 @@ const RegisterPageContextProvider = (props) => {
     const [passwordIncorrectReason, setPasswordIncorrectReason] = useState("");
     const [passwordConfirmIncorrectReason, setPasswordConfirmIncorrectReason] = useState("");
 
-    const abortController = new AbortController();
+    const [abortController, setAbortCintroller] = useState(new AbortController());
 
     const navigate = useNavigate();
 

@@ -12,7 +12,7 @@ const ProfilePageContextProvider = (props) => {
     const [userData, setUserData] = useState({userId: 0, isBlocked: null, isAdmin: null, username: ""});
     const [logFormSubmit, setLogFormSubmit] = useState(false)
 
-    const abortController = new AbortController();
+    const [abortController, setAbortCintroller] = useState(new AbortController());
 
     const navigate = useNavigate();
 

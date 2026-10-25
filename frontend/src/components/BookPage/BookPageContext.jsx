@@ -39,7 +39,7 @@ const BookPageContextProvider = (props) => {
     const [searchWindowOpen, setSearchWindowOpen] = useState(false);
 
 
-    const abortController = new AbortController();
+    const [abortController, setAbortCintroller] = useState(new AbortController());
 
 
     useEffect(

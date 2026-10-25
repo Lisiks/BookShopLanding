@@ -17,7 +17,7 @@ const CartPageContextProvider = (props) => {
 
     const [createOrderFormIsSubmit, setCreateOrderFormIsSubmit] = useState(false);
 
-    const abortController = new AbortController();
+    const [abortController, setAbortCintroller] = useState(new AbortController());
 
     const navigate = useNavigate();
 
