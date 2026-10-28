@@ -6,7 +6,6 @@
     grid-template-columns: 1fr 1fr;
     
     overflow-y: auto;
-    scroll-behavior: smooth;
     scrollbar-width: none;
 
     padding-bottom: 18px;

@@ -1,30 +1,38 @@
 import QueryManager from "../../query_manager";
 
-import { createContext, useState, useEffect, useRef } from "react";
+import { createContext, useState, useEffect, useRef, useContext } from "react";
 import AddWindow from "../base/AddWindow/AddWindow";
 import BookSearchPanel from "./components/BookSearchPanel/BookSearchPanel";
-
+import { GlobalBookContext } from "../../GlobalBookContextProvider";
 
 export const BookPageContext = createContext({});
 
 const BookPageContextProvider = (props) => {
     const {children} = props;
 
+    const {
+        bookMap, 
+        setBookMap, 
+        bookSearchParams, 
+        setBookSearchParams, 
+        bookAuthorId, 
+        setBookAuthorId, 
+        bookGenreId, 
+        setBookGenreId, 
+        bookTitle, 
+        setBookTitle, 
+        bookMinPrice, 
+        setBookMinPrice,
+        bookMaxPrice, 
+        setBookMaxPrice,
+        authorMap, 
+        setAuthorMap,
+        genreMap, 
+        setGenreMap,
+        currentBookListScroll,
+        setCurrentBookListScroll
+        } = useContext(GlobalBookContext)
 
-    const [bookMap, setBookMap] = useState(new Map());
-    const [authorMap, setAuthorMap] = useState(new Map());
-    const [genreMap, setGenreMap] = useState(new Map());
-
-    
-    const [bookSearchParams, setBookSearchParams] = useState(
-        {page: 0}
-    );
-
-    const [bookAuthorId, setBookAuthorId] = useState("");
-    const [bookGenreId, setBookGenreId] = useState("");
-    const [bookTitle, setBookTitle] = useState("");
-    const [bookMinPrice, setBookMinPrice] = useState("");
-    const [bookMaxPrice, setBookMaxPrice] = useState("");
 
     const [bookMaxPriceIncorrectValue, setBookMaxPriceIncorrectValue] = useState(false);
     const [bookMinPriceIncorrectValue, setBookMinPriceIncorrectValue] = useState(false);
@@ -42,21 +50,21 @@ const BookPageContextProvider = (props) => {
     const [abortController, setAbortCintroller] = useState(new AbortController());
 
 
+    const bookListDomRef = useRef(null);
+
     useEffect(
         () => {
-            Promise.all(
-                [
-                    QueryManager.getBooks(bookSearchParams, abortController.signal),
-                    QueryManager.getAuthors(abortController.signal),
-                    QueryManager.getGenres(abortController.signal),
-                ]
-            ).then(([bookData, authorsData, genresData]) => {
-                setBookMap(new Map(Object.entries(bookData.responceBody)));
-                setAuthorMap(new Map(Object.entries(authorsData.responceBody)));
-                setGenreMap(new Map(Object.entries(genresData.responceBody)))
+            bookListDomRef.current.scrollTop = currentBookListScroll;
+
+
+            bookListDomRef.current.addEventListener("scroll", (event) => {
+                setCurrentBookListScroll(event.target.scrollTop);
             })
 
-            return () => {abortController.abort()}
+
+            return () => {
+                abortController.abort()
+            }
         }, []
     )
 
@@ -99,8 +107,6 @@ const BookPageContextProvider = (props) => {
         setBookMinPriceIncorrectReason("");
     }
 
-
-    const bookListDomRef = useRef(null);
 
     const submitSearchForm = (event) => {
         event.preventDefault();
@@ -153,7 +159,7 @@ const BookPageContextProvider = (props) => {
         QueryManager.getBooks(paramsObject, abortController.signal).then(
             (bookData) => {
                 setBookIsSearch(false);
-                bookListDomRef.current.scrollTop = 0;
+                bookListDomRef.current.scrollTop = 0
                 setBookMap(new Map(Object.entries(bookData.responceBody)));
                 setBookSearchParams(paramsObject);
                 setBookPageIsLast(false)
@@ -237,7 +243,7 @@ const BookPageContextProvider = (props) => {
                 setBookMaxPrice("");
                 setBookIsSearch(false);
 
-                bookListDomRef.current.scrollTop = 0;
+                bookListDomRef.current.scrollTop = 0
                 setBookMap(new Map(Object.entries(bookData.responceBody)));
                 setBookSearchParams(baseParams);
                 setBookPageIsLast(false);
@@ -247,9 +253,6 @@ const BookPageContextProvider = (props) => {
     }
 
     
-    
-
-
     const [selectedBookId, setSelectedBookId] = useState(null);
     const selectedBookData = bookMap.get(String(selectedBookId));
 
