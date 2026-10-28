@@ -3,7 +3,7 @@ from typing import Annotated
 
 
 class ShopingCartDTO(BaseModel):
-    items: Annotated[list[int], Field(min_length=1, max_length=10, alias="items")]
+    items: Annotated[list[int], Field(max_length=10, alias="items")]
 
     @field_validator("items", mode="after")
     @classmethod

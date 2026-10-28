@@ -47,12 +47,10 @@ class CommentsRepository:
             CommentsORM.text, CommentsORM.datetime, UsersORM.username, UsersORM.id.label("user_id")
         ).join(
             UsersORM
-        ).where(CommentsORM.book_id == book_id)
-
-        stmt = stmt.order_by(desc(CommentsORM.datetime))
+        ).where(CommentsORM.book_id == book_id).order_by(desc(CommentsORM.datetime))
 
         comments = await self.__session.execute(stmt)
-        return {comment.user_id : CommentGetDTO.model_validate(comment) for comment in comments.all()}
+        return [CommentGetDTO.model_validate(comment) for comment in comments.all()]
 
 
 def get_repository(session: Annotated[AsyncSession, Depends(get_session)]) -> CommentsRepository:

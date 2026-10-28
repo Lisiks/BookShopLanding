@@ -103,10 +103,10 @@ async def get_comment_me(
     return await service.get_by_id(book_id, user_data.id)
 
 
-@router.get("/{book_id}/comments", status_code=status.HTTP_200_OK, response_model=dict[int, CommentGetDTO])
+@router.get("/{book_id}/comments", status_code=status.HTTP_200_OK, response_model=list[CommentGetDTO])
 @cache(expire=config.cache.ttl, namespace=config.cache.namespaces.comments, key_builder=comments_key_builder)
 async def get_all_comments(
     book_id: Annotated[int, Path(gt=0)],
     service: Annotated[CommentsService, Depends(get_comment_service)]
-) -> dict[str, CommentGetDTO | list[CommentGetDTO]]:
+) -> list[CommentGetDTO]:
     return await service.get_all(book_id)

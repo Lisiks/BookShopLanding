@@ -13,10 +13,10 @@ def default_search_key_builder(
     args: Tuple[Any, ...],
     kwargs: Dict[str, Any],
 ) -> str:
-    jahnre_search_params = kwargs["search_params"]
+    search_params = kwargs["search_params"]
 
     cache_key = hashlib.md5( 
-        f"{func.__module__}:{func.__name__}:{jahnre_search_params.model_dump_json()}".encode()
+        f"{func.__module__}:{func.__name__}:{search_params.model_dump_json()}".encode()
     ).hexdigest()
     return f"{namespace}:{cache_key}"
 
@@ -88,10 +88,10 @@ def user_orders_key_builder(
     args: Tuple[Any, ...],
     kwargs: Dict[str, Any],
 ) -> str:
-    jahnre_search_params = kwargs["search_params"]
+    search_params = kwargs["search_params"]
     user_id = kwargs["user_data"].id
 
     cache_key = hashlib.md5( 
-        f"{func.__module__}:{func.__name__}:{jahnre_search_params.model_dump_json()}".encode()
+        f"{func.__module__}:{func.__name__}:{search_params.model_dump_json()}".encode()
     ).hexdigest()
     return f"{namespace}-{user_id}:{cache_key}"

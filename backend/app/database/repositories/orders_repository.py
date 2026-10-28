@@ -70,7 +70,7 @@ class OrdersRepository:
         if user_id is not None:
             stmt = stmt.where(OrdersORM.user_id == user_id)
 
-        stmt = stmt.order_by(desc(OrdersORM.datetime)).limit(search_params.limit).offset(search_params.offset)
+        stmt = stmt.order_by(desc(OrdersORM.datetime), OrdersORM.id).limit(search_params.limit).offset(search_params.offset)
 
         orders = await self.__session.scalars(stmt)
         return {order.id: OrderGetDTO.model_validate(order, by_alias=False, by_name=True) for order in orders.all()}

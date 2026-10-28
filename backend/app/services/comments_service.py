@@ -16,6 +16,7 @@ class CommentsService:
     async def create_comment(self, text: str, book_id: int, user_id: int) -> None:
         await self.__repository.create_comment(text, book_id, user_id)
         self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.comments}-{book_id}")
+        self.__bg_tasks.add_task(FastAPICache.clear, f"{config.cache.namespaces.comments}-{book_id}-{user_id}")
 
     async def delete_comment(self, book_id: int, user_id: int) -> None:
         await self.__repository.delete_comment(book_id, user_id)
@@ -25,7 +26,7 @@ class CommentsService:
     async def get_by_id(self, book_id: int, user_id: int) -> CommentGetDTO:
         return await self.__repository.get_by_id(book_id, user_id)
 
-    async def get_all(self, book_id) -> dict[int, CommentGetDTO]:
+    async def get_all(self, book_id) -> list[CommentGetDTO]:
         return await self.__repository.get_all(book_id)
 
 
