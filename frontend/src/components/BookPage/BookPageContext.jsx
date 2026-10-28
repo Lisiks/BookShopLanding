@@ -241,7 +241,13 @@ const BookPageContextProvider = (props) => {
                 setBookGenreId("");
                 setBookMinPrice("");
                 setBookMaxPrice("");
+                setBookMaxPriceIncorrectValue(false)
+                setBookMinPriceIncorrectValue(false)
+                setBookMaxPriceIncorrectReason("")
+                setBookMinPriceIncorrectReason("")
                 setBookIsSearch(false);
+
+                
 
                 bookListDomRef.current.scrollTop = 0
                 setBookMap(new Map(Object.entries(bookData.responceBody)));

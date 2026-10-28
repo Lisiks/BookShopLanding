@@ -8,7 +8,10 @@ import WhiteButton from "../../../base/WhiteButton/WhiteButton";
 import "./styles.css"
 
 const BookSearchForm = () => {
-    const { openSearchWindow, bookTitle, inputTitle, submitSearchForm, subParamsIsUse, clearSearchParams } = useContext(BookPageContext);
+    const { openSearchWindow, bookTitle, inputTitle, submitSearchForm, subParamsIsUse, clearSearchParams, bookMaxPriceIncorrectValue, bookMinPriceIncorrectValue } = useContext(BookPageContext);
+
+    const parametersHasError = bookMaxPriceIncorrectValue || bookMinPriceIncorrectValue;
+    console.log(parametersHasError);
 
     return (
         <form className="book-page-search-form" onSubmit={submitSearchForm}>
@@ -22,7 +25,7 @@ const BookSearchForm = () => {
                 state={bookTitle}
                 setState={inputTitle}
             />
-            <WhiteButton type="button" className="book-page-search-form-params-btn" onClick={openSearchWindow}> </WhiteButton>
+            <WhiteButton type="button" className="book-page-search-form-params-btn" hasError={String(parametersHasError)} onClick={openSearchWindow}> </WhiteButton>
             {subParamsIsUse && <BrownButton type="button" onClick={clearSearchParams} className="book-page-search-form-clear-btn"> </BrownButton>}
         </form>
     );

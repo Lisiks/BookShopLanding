@@ -44,3 +44,34 @@
     padding-right: calc(30px + 0.05vw + 5px) !important ;
     
 }
+
+
+.book-page-search-form-params-btn[haserror="true"] {
+    border: 1px solid var(--error-red);
+
+    animation-name: error-parameters-animation;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes error-parameters-animation {
+    20% {
+        transform: translateX(3px);
+    }
+
+    40% {
+        transform: translateX(-3px);
+    }
+
+    60% {
+        transform: translateX(3px);
+    }
+
+    80% {
+        transform: translateX(-3px);
+    }
+
+    100% {
+        transform: translateX(0px);
+    }
+}
