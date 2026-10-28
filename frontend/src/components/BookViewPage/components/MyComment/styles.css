@@ -1,0 +1,38 @@
+.book-view-page-my-comment {
+    padding: 32px;
+    margin-top: 18px;
+
+    background-color: var(--medium-layer-background-white);
+    border-radius: 16px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+}
+
+.book-view-page-my-comment > div {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.book-view-page-my-comment > div > button {
+    background-image: url("../../../../assets/images/ic_close_black.svg");
+    background-position: center;
+    background-size: calc(30px + 0.05vw);
+    background-repeat: no-repeat;
+    width: calc(40px + 0.3vw);
+}
+
+
+.book-view-page-my-comment-header {
+    font-size: var(--large-font-size);
+    font-family: 'manrope_regular';
+    font-weight: bold;
+    color: var(--dark-brown-bold)
+}
+
+.book-view-page-my-comment-text {
+    font-size: var(--medium-font-size);
+    font-family: 'inter_regular';
+    color: var(--dark-brown-base);
+    text-align: justify;
+}
+

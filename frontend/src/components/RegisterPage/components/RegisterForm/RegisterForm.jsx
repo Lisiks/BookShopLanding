@@ -66,7 +66,12 @@ const RegisterForm = () => {
                 setState={inputPasswordConfirm}
             />
 
-            <Link to="/login" className="register-form-link">Есть аккаунт?</Link>
+            <div className="register-form-link-block">
+                <Link to="/" className="register-form-link">Назад</Link>
+                <Link to="/login" className="register-form-link">Есть аккаунт?</Link>
+            </div>
+
+            
 
             <BrownButton type="submit">Зарегистрироваться</BrownButton>
         </form>

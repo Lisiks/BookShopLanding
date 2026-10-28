@@ -17,7 +17,6 @@ const BookItem = (props) => {
 
     return (
         <div className="book-item-block" ref={ref}>
-
             <div className="book-item-block-image-container">
                 <img src={`${API_ORIGIN}/${bookImageUrl}`} alt="Обложка книги"/>
             </div>

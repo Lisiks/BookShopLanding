@@ -1,0 +1,21 @@
+
+.book-view-page-container-comment-form {
+    max-width: 100%;
+    padding: 32px;
+    margin-top: 18px;
+
+    background-color: var(--medium-layer-background-white);
+    border-radius: 16px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+}
+
+
+
+.book-view-page-container-comment-form > .textarea-label > textarea {
+    height: calc(200px + 5vh);
+}
+
+
+.book-view-page-container-comment-form > button {
+    margin-top: 10px;
+}

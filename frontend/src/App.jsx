@@ -7,6 +7,7 @@ import CartPage from "./components/CartPage/CartPage.jsx"
 import LoginPage from "./components/LoginPage/LoginPage.jsx"
 import RegisterPage from "./components/RegisterPage/RegisterPage.jsx"
 import BookViewPage from "./components/BookViewPage/BookViewPage.jsx"
+import ErrorPage from "./components/ErrorPage/ErrorPage.jsx"
 
 import "./styles/fonts.css"
 import "./styles/vars.css"
@@ -23,6 +24,7 @@ const App = () => {
             <Route path="/cart" element={<CartPage/>}/>
             <Route path="/login" element={<LoginPage/>}/>
             <Route path="/register" element={<RegisterPage/>}/>
+            <Route path="*" element={<ErrorPage/>}/>
         </Routes>
     )
 }

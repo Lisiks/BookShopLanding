@@ -22,11 +22,16 @@
 }
 
 
+.login-form-link-block {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
 .login-form-link {
     color: var(--dark-brown-base);
     font-size: var(--small-font-size);
     font-family: 'inter_regular';
-    margin-bottom: 32px;
 }
 
 .login-form-link:hover {

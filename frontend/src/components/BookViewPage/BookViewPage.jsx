@@ -1,10 +1,12 @@
-import { useParams } from "react-router"
+import BookViewPageContextProvider from "./BookViewPageContext";
+import BookMain from "./components/BookMain/BooMain";
+
 
 const BookViewPage = () => {
-    const {bookId} = useParams();
-
     return (
-        <h1>This is a page of book #{bookId}</h1>
+        <BookViewPageContextProvider>
+            <BookMain/>
+        </BookViewPageContextProvider>
     )
 };
 

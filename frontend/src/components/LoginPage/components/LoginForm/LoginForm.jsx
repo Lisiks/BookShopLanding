@@ -48,8 +48,11 @@ const LoginForm = () => {
                 setState={inputPassword}
             />
 
-
-            <Link to="/register" className="login-form-link">Нет аккаунта?</Link>
+            <div className="login-form-link-block">
+                <Link to="/" className="login-form-link">Назад</Link>
+                <Link to="/register" className="login-form-link">Нет аккаунта?</Link>
+            </div>
+            
 
             <BrownButton type="submit">Войти</BrownButton>
         </form>

@@ -32,6 +32,10 @@ class QueryManager {
         return await this.sendResponce(`${API_ORIGIN}/books/?${searchUrlParams.toString()}`, signal, "GET")
     }
 
+    static getBookById = async (bookId, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/books/${bookId}`, signal, "GET")
+    }
+
     static getAuthors = async (signal) => {
         return await this.sendResponce(`${API_ORIGIN}/authors/`, signal, "GET")
     }
@@ -55,6 +59,23 @@ class QueryManager {
     static getOrders = async (queryParams, signal) => {
         const searchUrlParams = new URLSearchParams(queryParams);
         return await this.sendResponce(`${API_ORIGIN}/accounts/me/orders/?${searchUrlParams.toString()}`, signal, "GET")
+    }
+
+
+    static createComment = async (commentData, bookId, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/books/${bookId}/comments/`, signal, "POST", commentData)
+    }
+
+    static getMyComment = async (bookId, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/books/${bookId}/comments/me`, signal, "GET")
+    }
+
+    static getAllComments = async (bookId, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/books/${bookId}/comments/`, signal, "GET")
+    }
+
+    static deleteComment = async (bookId, signal) => {
+        return await this.sendResponce(`${API_ORIGIN}/books/${bookId}/comments/`, signal, "DELETE")
     }
 
 

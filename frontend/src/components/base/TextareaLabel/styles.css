@@ -1,0 +1,43 @@
+
+.textarea-label > label {
+    font-family: 'inter_regular';
+    font-weight: bold;
+    font-size: var(--medium-font-size);
+    color: var(--dark-brown-bold);
+    display: block;
+    width: 100%;
+    margin-bottom: 3px;
+    transition: all 0.2s 0s ease-in-out;
+}
+
+.textarea-label > textarea {
+    font-family: 'inter_regular';
+    display: block;
+    width: 100%;
+    font-size: var(--sub-large-font-size);
+    color: var(--dark-brown-base);
+    background-color: var(--first-layer-background-white);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 2px 2px 5px var(--shadow-black);
+    transition: all 0.2s 0s ease-in-out;
+    resize: none;
+}
+
+.textarea-label > textarea:focus, 
+.textarea-label > textarea:hover {
+    outline: none;
+    box-shadow: 2px 2px 5px var(--shadow-black-hover);
+}
+
+
+.textarea-label[haserror="true"] > textarea {
+    border: 1px solid var(--error-red);
+}
+
+
+.textarea-label[haserror="true"] > label {
+    color: var(--error-red);
+}
+

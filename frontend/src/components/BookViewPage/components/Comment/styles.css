@@ -1,0 +1,28 @@
+.book-view-page-comment {
+    padding: 32px;
+    margin-top: 18px;
+
+    background-color: var(--medium-layer-background-white);
+    border-radius: 16px;
+    box-shadow: 3px 3px 5px var(--shadow-black);
+}
+
+.book-view-page-comment > p {
+    font-size: var(--medium-font-size);
+    font-family: 'inter_regular';
+    color: var(--dark-brown-base);
+    text-align: justify;
+}
+
+
+.book-view-page-comment > div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.book-view-page-comment > div > p {
+    font-size: var(--large-font-size);
+    font-family: 'manrope_regular';
+    font-weight: bold;
+    color: var(--dark-brown-bold)
+}
