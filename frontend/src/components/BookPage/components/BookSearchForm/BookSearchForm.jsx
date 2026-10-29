@@ -11,7 +11,6 @@ const BookSearchForm = () => {
     const { openSearchWindow, bookTitle, inputTitle, submitSearchForm, subParamsIsUse, clearSearchParams, bookMaxPriceIncorrectValue, bookMinPriceIncorrectValue } = useContext(BookPageContext);
 
     const parametersHasError = bookMaxPriceIncorrectValue || bookMinPriceIncorrectValue;
-    console.log(parametersHasError);
 
     return (
         <form className="book-page-search-form" onSubmit={submitSearchForm}>

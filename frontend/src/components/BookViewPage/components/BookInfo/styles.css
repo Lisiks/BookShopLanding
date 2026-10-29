@@ -13,13 +13,16 @@
     display: flex;
     justify-content: space-between;
     align-items: start;
+    gap: 32px;
     
 }
 
 
 
 .book-view-page-container-info > img {
-    width: calc(300px + 5vw);
+    display: block;
+    max-width: calc(200px + 3vw);;
+    min-width: calc(200px + 3vw);
     border-radius: 10px;
     box-shadow: 3px 3px 5px var(--shadow-black);
 }
@@ -61,6 +64,7 @@
     font-size: var(--medium-font-size);
     font-family: 'inter_regular';
     color: var(--dark-brown-base);
+    text-align: justify;
 }
 
 .book-view-page-p > a {

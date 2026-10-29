@@ -71,8 +71,7 @@ const ProfilePageContextProvider = (props) => {
         serOrderIsSearch(true);
         
         QueryManager.getOrders({"page": page + 1}, abortController.signal).then((responceData) => {
-                console.log("Да")
-                serOrderIsSearch(true);
+                serOrderIsSearch(false);
                 setPage(page + 1);
 
 
