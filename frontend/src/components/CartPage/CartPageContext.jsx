@@ -23,7 +23,7 @@ const CartPageContextProvider = (props) => {
 
     useEffect(
         () => {
-            const cartLocalstorageData = JSON.parse(localStorage.getItem("cart"));
+            const cartLocalstorageData = JSON.parse(localStorage.getItem("cart")) ?? {};
 
             const bookIdsJsonList = JSON.stringify({ items: Array.from(Object.keys(cartLocalstorageData)) })
 

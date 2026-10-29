@@ -8,7 +8,7 @@ import "./styles.css"
 
 
 
-const API_ORIGIN = "http://localhost:8000";
+const API_ORIGIN = import.meta.env.VITE_BACKEND_ORIGIN;
 
 const BookItem = (props) => {
     const {bookId, bookImageUrl, bookTitle, bookAuthor, bookGenre, bookYear, isbn, bookPrice, ref} = props;

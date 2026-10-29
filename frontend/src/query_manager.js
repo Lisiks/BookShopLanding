@@ -1,4 +1,4 @@
-const API_ORIGIN = "http://localhost:8000";
+const API_ORIGIN = import.meta.env.VITE_BACKEND_ORIGIN;
 
 class QueryManager {
     static sendResponce = async (url, signal, method, body, headers = {}) => {

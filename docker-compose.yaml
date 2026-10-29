@@ -104,6 +104,18 @@ services:
         condition: service_healthy
     pre_start:
       - command: ["alembic", "upgrade", "head"]
+
+  frontend_application:
+    build: "frontend/"
+    container_name: frontend_container
+    environment:
+      VITE_BACKEND_ORIGIN: ${VITE_BACKEND_ORIGIN}
+    ports:
+      - "${REACT_APP_PORT}:${REACT_APP_PORT}"
+    depends_on:
+      backend_application:
+        condition: service_started
+      
       
   
 volumes:

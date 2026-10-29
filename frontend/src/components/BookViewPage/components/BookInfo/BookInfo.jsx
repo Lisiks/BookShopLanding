@@ -5,7 +5,7 @@ import { BookViewPageContext } from "../../BookViewPageContext";
 
 import "./styles.css"
 
-const API_ORIGIN = "http://localhost:8000";
+const API_ORIGIN = import.meta.env.VITE_BACKEND_ORIGIN;;
 
 const BookInfo = () => {
     const {bookData, openAddWindow} = useContext(BookViewPageContext);
